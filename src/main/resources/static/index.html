@@ -48,20 +48,10 @@
 
 <p id="submitResult"></p>
 
-<!-- ── CHECK STATUS ─────────────────────────────────────────── -->
-<h2>Check Application Status</h2>
+<!-- ── APPLICATION SUMMARY (shown after submit) ─────────────── -->
+<div id="applicationSummary"></div>
 
-<label>Application ID:<br>
-    <input type="number" id="lookupId" placeholder="e.g. 42" min="1">
-</label>
-<br><br>
-<button type="button" onclick="lookupApplication()">Look Up</button>
-
-<div id="lookupResult"></div>
-
-<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
 <script>
-    // ── Submit form ──────────────────────────────────────────
     let entryCount = 0;
 
     function addCreditEntry() {
@@ -108,45 +98,18 @@
         });
 
         const resultEl = document.getElementById('submitResult');
+        const summaryEl = document.getElementById('applicationSummary');
+
         if (response.ok) {
             const data = await response.json();
             resultEl.innerHTML = `Application submitted! Your ID is: <strong>${data.id}</strong>.`;
-            prefillAndLookup(data.id);
+            summaryEl.innerHTML = renderApplication(data);
+            summaryEl.scrollIntoView({ behavior: 'smooth' });
         } else {
             resultEl.innerHTML = '<span class="error">Something went wrong.</span>';
+            summaryEl.innerHTML = '';
         }
     });
-
-    function prefillAndLookup(id) {
-        document.getElementById('lookupId').value = id;
-        lookupApplication();
-        document.getElementById('lookupResult').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // ── Look up application ──────────────────────────────────
-    async function lookupApplication() {
-        const id = document.getElementById('lookupId').value.trim();
-        const resultEl = document.getElementById('lookupResult');
-
-        if (!id) {
-            resultEl.innerHTML = '<p class="error">Please enter an application ID.</p>';
-            return;
-        }
-
-        const response = await fetch(`/api/loans/${id}`);
-
-        if (response.status === 404) {
-            resultEl.innerHTML = `<p class="error">No application found with ID ${id}.</p>`;
-            return;
-        }
-        if (!response.ok) {
-            resultEl.innerHTML = '<p class="error">Something went wrong.</p>';
-            return;
-        }
-
-        const data = await response.json();
-        resultEl.innerHTML = renderApplication(data);
-    }
 
     function renderApplication(data) {
         const creditRows = (data.creditHistory && data.creditHistory.length > 0)
@@ -160,6 +123,7 @@
             : '<tr><td colspan="4"><em>No credit history provided.</em></td></tr>';
 
         return `
+        <h2>Your Submitted Application</h2>
         <div class="status-box">
             <strong>Application #${data.id}</strong><br>
             Status: <span class="status-badge status-${data.status}">${data.status}</span><br>

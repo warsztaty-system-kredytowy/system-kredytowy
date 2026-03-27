@@ -20,8 +20,8 @@ public class LoanApplicationController {
         return service.submit(request);
     }
 
-    @GetMapping("/{id}")                          // handles GET /api/loans/{id}
-    public LoanApplication getApplication(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public LoanApplication getApplication(@PathVariable("id") Long id) {
         return service.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Application not found with id: " + id));
