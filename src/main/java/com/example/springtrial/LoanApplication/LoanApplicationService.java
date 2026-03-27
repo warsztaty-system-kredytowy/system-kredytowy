@@ -1,14 +1,15 @@
 package com.example.springtrial.LoanApplication;
 
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 
-@Service   // marks this as a Spring-managed service bean
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Service
 public class LoanApplicationService {
 
     private final LoanApplicationRepository repository;
 
-    // Spring automatically "injects" the repository here (Dependency Injection)
     public LoanApplicationService(LoanApplicationRepository repository) {
         this.repository = repository;
     }
@@ -18,13 +19,16 @@ public class LoanApplicationService {
 
         application.setMonthlyIncome(request.getMonthlyIncome());
         application.setMonthlyLiabilities(request.getMonthlyLiabilities());
-        application.setCreditScore(request.getCreditScore());
+        application.setCreditHistory(request.getCreditHistory());
         application.setLoanPurpose(request.getLoanPurpose());
 
-        // These are set by the system, not the customer
         application.setSubmittedAt(LocalDateTime.now());
-        application.setStatus("SUBMITTED");
+        application.setStatus(LoanStatus.CREATED);
 
-        return repository.save(application); // saves to DB, returns saved object with ID
+        return repository.save(application);
+    }
+
+    public Optional<LoanApplication> findById(Long id) {
+        return repository.findById(id);
     }
 }

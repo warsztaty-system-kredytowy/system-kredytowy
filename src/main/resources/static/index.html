@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Loan Application</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        h2 { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+        .credit-entry { border: 1px solid #ccc; padding: 10px; margin: 8px 0; border-radius: 4px; }
+        .status-box { border: 1px solid #ccc; padding: 16px; border-radius: 4px; margin-top: 12px; line-height: 1.8; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px;
+                        font-weight: bold; font-size: 0.85em; }
+        .status-CREATED        { background: #e0e0e0; color: #333; }
+        .status-PENDING_REVIEW { background: #fff3cd; color: #856404; }
+        .status-ACCEPTED       { background: #d1e7dd; color: #0f5132; }
+        .status-DENIED         { background: #f8d7da; color: #842029; }
+        .status-APPEAL         { background: #cfe2ff; color: #084298; }
+        .error { color: #842029; }
+    </style>
 </head>
 <body>
-<h1>Submit Loan Application</h1>
+
+<h1>Loan Application</h1>
+
+<!-- ── SUBMIT FORM ──────────────────────────────────────────── -->
+<h2>Submit New Application</h2>
 
 <form id="loanForm">
     <label>Monthly Income (PLN):<br>
@@ -15,42 +34,154 @@
         <input type="number" id="monthlyLiabilities" step="0.01">
     </label><br><br>
 
-    <label>Credit Score:<br>
-        <input type="number" id="creditScore">
-    </label><br><br>
-
     <label>Loan Purpose:<br>
         <textarea id="loanPurpose" rows="4" cols="40"></textarea>
     </label><br><br>
 
+    <h3>Credit History</h3>
+    <div id="creditHistoryContainer"></div>
+    <button type="button" onclick="addCreditEntry()">+ Add Credit Entry</button>
+    <br><br>
+
     <button type="submit">Submit Application</button>
 </form>
 
-<p id="result"></p>
+<p id="submitResult"></p>
 
+<!-- ── CHECK STATUS ─────────────────────────────────────────── -->
+<h2>Check Application Status</h2>
+
+<label>Application ID:<br>
+    <input type="number" id="lookupId" placeholder="e.g. 42" min="1">
+</label>
+<br><br>
+<button type="button" onclick="lookupApplication()">Look Up</button>
+
+<div id="lookupResult"></div>
+
+<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
 <script>
-    document.getElementById('loanForm').addEventListener('submit', async function(e) {
-        e.preventDefault(); // stops the form from reloading the page
+    // ── Submit form ──────────────────────────────────────────
+    let entryCount = 0;
+
+    function addCreditEntry() {
+        entryCount++;
+        const container = document.getElementById('creditHistoryContainer');
+        const div = document.createElement('div');
+        div.className = 'credit-entry';
+        div.id = 'entry-' + entryCount;
+        div.innerHTML = `
+            <strong>Entry #${entryCount}</strong>
+            <button type="button" onclick="removeEntry(${entryCount})" style="float:right">Remove</button><br>
+            <label>Amount Loaned (PLN): <input type="number" step="0.01" class="amountLoaned"></label><br>
+            <label>Amount Still To Pay (PLN): <input type="number" step="0.01" class="amountStillToPay"></label><br>
+            <label>Date Till Full Repayment: <input type="date" class="dateTillFullRepayment"></label><br>
+            <label>Monthly Cost (PLN): <input type="number" step="0.01" class="monthlyCost"></label>
+        `;
+        container.appendChild(div);
+    }
+
+    function removeEntry(id) {
+        document.getElementById('entry-' + id).remove();
+    }
+
+    document.getElementById('loanForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const entries = document.querySelectorAll('.credit-entry');
+        const creditHistory = Array.from(entries).map(entry => ({
+            amountLoaned:          entry.querySelector('.amountLoaned').value,
+            amountStillToPay:      entry.querySelector('.amountStillToPay').value,
+            dateTillFullRepayment: entry.querySelector('.dateTillFullRepayment').value,
+            monthlyCost:           entry.querySelector('.monthlyCost').value
+        }));
 
         const response = await fetch('/api/loans', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                monthlyIncome: document.getElementById('monthlyIncome').value,
+                monthlyIncome:      document.getElementById('monthlyIncome').value,
                 monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
-                creditScore: document.getElementById('creditScore').value,
-                loanPurpose: document.getElementById('loanPurpose').value
+                loanPurpose:        document.getElementById('loanPurpose').value,
+                creditHistory:      creditHistory
             })
         });
 
+        const resultEl = document.getElementById('submitResult');
         if (response.ok) {
             const data = await response.json();
-            document.getElementById('result').textContent =
-                'Application submitted! Your ID is: ' + data.id;
+            resultEl.innerHTML = `Application submitted! Your ID is: <strong>${data.id}</strong>.`;
+            prefillAndLookup(data.id);
         } else {
-            document.getElementById('result').textContent = 'Something went wrong.';
+            resultEl.innerHTML = '<span class="error">Something went wrong.</span>';
         }
     });
+
+    function prefillAndLookup(id) {
+        document.getElementById('lookupId').value = id;
+        lookupApplication();
+        document.getElementById('lookupResult').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ── Look up application ──────────────────────────────────
+    async function lookupApplication() {
+        const id = document.getElementById('lookupId').value.trim();
+        const resultEl = document.getElementById('lookupResult');
+
+        if (!id) {
+            resultEl.innerHTML = '<p class="error">Please enter an application ID.</p>';
+            return;
+        }
+
+        const response = await fetch(`/api/loans/${id}`);
+
+        if (response.status === 404) {
+            resultEl.innerHTML = `<p class="error">No application found with ID ${id}.</p>`;
+            return;
+        }
+        if (!response.ok) {
+            resultEl.innerHTML = '<p class="error">Something went wrong.</p>';
+            return;
+        }
+
+        const data = await response.json();
+        resultEl.innerHTML = renderApplication(data);
+    }
+
+    function renderApplication(data) {
+        const creditRows = (data.creditHistory && data.creditHistory.length > 0)
+            ? data.creditHistory.map(e => `
+                <tr>
+                    <td>${e.amountLoaned ?? '—'} PLN</td>
+                    <td>${e.amountStillToPay ?? '—'} PLN</td>
+                    <td>${e.dateTillFullRepayment ?? '—'}</td>
+                    <td>${e.monthlyCost ?? '—'} PLN</td>
+                </tr>`).join('')
+            : '<tr><td colspan="4"><em>No credit history provided.</em></td></tr>';
+
+        return `
+        <div class="status-box">
+            <strong>Application #${data.id}</strong><br>
+            Status: <span class="status-badge status-${data.status}">${data.status}</span><br>
+            Submitted: ${data.submittedAt ? new Date(data.submittedAt).toLocaleString() : '—'}<br>
+            Monthly Income: ${data.monthlyIncome ?? '—'} PLN<br>
+            Monthly Liabilities: ${data.monthlyLiabilities ?? '—'} PLN<br>
+            Loan Purpose: ${data.loanPurpose ?? '—'}<br><br>
+
+            <strong>Credit History</strong>
+            <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%; margin-top:6px;">
+                <thead>
+                    <tr>
+                        <th>Amount Loaned</th>
+                        <th>Still To Pay</th>
+                        <th>Full Repayment By</th>
+                        <th>Monthly Cost</th>
+                    </tr>
+                </thead>
+                <tbody>${creditRows}</tbody>
+            </table>
+        </div>`;
+    }
 </script>
 </body>
 </html>

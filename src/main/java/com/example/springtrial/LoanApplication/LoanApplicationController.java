@@ -2,9 +2,10 @@ package com.example.springtrial.LoanApplication;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-@RestController              // this class handles HTTP requests and returns JSON
-@RequestMapping("/api/loans") // all endpoints here start with /api/loans
+@RestController
+@RequestMapping("/api/loans")
 public class LoanApplicationController {
 
     private final LoanApplicationService service;
@@ -13,9 +14,16 @@ public class LoanApplicationController {
         this.service = service;
     }
 
-    @PostMapping             // handles POST /api/loans
-    @ResponseStatus(HttpStatus.CREATED)  // returns HTTP 201 on success
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public LoanApplication submitApplication(@RequestBody LoanApplicationRequest request) {
         return service.submit(request);
+    }
+
+    @GetMapping("/{id}")                          // handles GET /api/loans/{id}
+    public LoanApplication getApplication(@PathVariable Long id) {
+        return service.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Application not found with id: " + id));
     }
 }
