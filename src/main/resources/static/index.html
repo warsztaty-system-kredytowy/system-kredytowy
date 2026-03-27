@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Application</title>
+</head>
+<body>
+<h1>Submit Loan Application</h1>
+
+<form id="loanForm">
+    <label>Monthly Income (PLN):<br>
+        <input type="number" id="monthlyIncome" step="0.01">
+    </label><br><br>
+
+    <label>Monthly Liabilities (PLN):<br>
+        <input type="number" id="monthlyLiabilities" step="0.01">
+    </label><br><br>
+
+    <label>Credit Score:<br>
+        <input type="number" id="creditScore">
+    </label><br><br>
+
+    <label>Loan Purpose:<br>
+        <textarea id="loanPurpose" rows="4" cols="40"></textarea>
+    </label><br><br>
+
+    <button type="submit">Submit Application</button>
+</form>
+
+<p id="result"></p>
+
+<script>
+    document.getElementById('loanForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // stops the form from reloading the page
+
+        const response = await fetch('/api/loans', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                monthlyIncome: document.getElementById('monthlyIncome').value,
+                monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
+                creditScore: document.getElementById('creditScore').value,
+                loanPurpose: document.getElementById('loanPurpose').value
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('result').textContent =
+                'Application submitted! Your ID is: ' + data.id;
+        } else {
+            document.getElementById('result').textContent = 'Something went wrong.';
+        }
+    });
+</script>
+</body>
+</html>
