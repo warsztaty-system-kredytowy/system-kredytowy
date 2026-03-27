@@ -16,7 +16,8 @@ public class LoanApplicationService {
 
     public LoanApplication submit(LoanApplicationRequest request) {
         LoanApplication application = new LoanApplication();
-
+        application.setLoanAmount(request.getLoanAmount());
+        application.setLoanTermYears(request.getLoanTermYears());
         application.setMonthlyIncome(request.getMonthlyIncome());
         application.setMonthlyLiabilities(request.getMonthlyLiabilities());
         application.setCreditHistory(request.getCreditHistory());

@@ -21,6 +21,8 @@ public class LoanApplication {
     // Financial data
     private BigDecimal monthlyIncome;
     private BigDecimal monthlyLiabilities;
+    private BigDecimal loanAmount;      // requested loan amount in PLN
+    private Integer loanTermYears;      // repayment period: 1–15 years
 
     // Credit history — each entry is its own row in a joined table
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

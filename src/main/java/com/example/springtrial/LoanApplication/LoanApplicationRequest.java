@@ -9,6 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 public class LoanApplicationRequest {
+    private BigDecimal loanAmount;
+    private Integer loanTermYears;
     private BigDecimal monthlyIncome;
     private BigDecimal monthlyLiabilities;
     private List<CreditHistoryEntry> creditHistory;

@@ -26,6 +26,14 @@
 <h2>Submit New Application</h2>
 
 <form id="loanForm">
+    <label>Loan Amount (PLN):<br>
+        <input type="number" id="loanAmount" step="0.01" min="0">
+    </label><br><br>
+
+    <label>Loan Term (years):<br>
+        <input type="number" id="loanTermYears" min="1" max="15">
+    </label><br><br>
+
     <label>Monthly Income (PLN):<br>
         <input type="number" id="monthlyIncome" step="0.01">
     </label><br><br>
@@ -92,6 +100,8 @@
             body: JSON.stringify({
                 monthlyIncome:      document.getElementById('monthlyIncome').value,
                 monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
+                loanAmount:         document.getElementById('loanAmount').value,
+                loanTermYears:      document.getElementById('loanTermYears').value,
                 loanPurpose:        document.getElementById('loanPurpose').value,
                 creditHistory:      creditHistory
             })
@@ -126,6 +136,8 @@
         <h2>Your Submitted Application</h2>
         <div class="status-box">
             <strong>Application #${data.id}</strong><br>
+            Loan Amount: ${data.loanAmount ?? '—'} PLN<br>
+            Loan Term: ${data.loanTermYears ?? '—'} year(s)<br>
             Status: <span class="status-badge status-${data.status}">${data.status}</span><br>
             Submitted: ${data.submittedAt ? new Date(data.submittedAt).toLocaleString() : '—'}<br>
             Monthly Income: ${data.monthlyIncome ?? '—'} PLN<br>
