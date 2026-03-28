@@ -37,7 +37,6 @@ Aplikacja startuje zwykle na **http://localhost:8080** (port domyślny Spring Bo
 - REST (przykład): `POST http://localhost:8080/api/loans`  
 - **Swagger UI:** http://localhost:8080/swagger-ui.html  
 - **OpenAPI JSON:** http://localhost:8080/v3/api-docs  
-- Konsola H2: http://localhost:8080/h2-console (JDBC URL z `application.properties`: `jdbc:h2:mem:loandb`, użytkownik `sa`, puste hasło)
 
 ## Testy
 
