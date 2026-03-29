@@ -116,7 +116,19 @@
             summaryEl.innerHTML = renderApplication(data);
             summaryEl.scrollIntoView({ behavior: 'smooth' });
         } else {
-            resultEl.innerHTML = '<span class="error">Something went wrong.</span>';
+            let errorMessage = 'Something went wrong.';
+            try {
+                const errorData = await response.json();
+                if (errorData?.errors?.loanPurpose) {
+                    errorMessage = errorData.errors.loanPurpose;
+                } else if (errorData?.detail) {
+                    errorMessage = errorData.detail;
+                } else if (errorData?.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (_) {
+            }
+            resultEl.innerHTML = `<span class="error">${errorMessage}</span>`;
             summaryEl.innerHTML = '';
         }
     });
