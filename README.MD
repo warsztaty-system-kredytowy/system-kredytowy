@@ -19,6 +19,7 @@ Symulowany backend wniosków kredytowych: REST API, baza w pamięci, prosty form
 
 ## Uruchomienie
 
+### Lokalnie
 Z katalogu projektu:
 
 ```bash
@@ -29,7 +30,21 @@ Z katalogu projektu:
 ./gradlew bootRun
 ```
 
-Aplikacja startuje zwykle na **http://localhost:8080** (port domyślny Spring Boot).
+
+### Przez Dockera
+Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
+
+### Najprościej: Docker Compose
+
+Z katalogu projektu uruchom:
+
+```bash
+# Windows (PowerShell / CMD) / Linux / macOS
+docker compose up --build
+```
+
+Po starcie aplikacja jest dostępna na: **http://localhost:8080**
+
 
 ## Przydatne adresy (po starcie)
 
