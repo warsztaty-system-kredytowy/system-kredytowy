@@ -1,0 +1,22 @@
+# VCS
+.git
+.gitignore
+
+# Build outputs
+build/**
+out/
+target/
+
+# Gradle caches
+.gradle/
+gradle-build/
+
+# IDE/editor
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
