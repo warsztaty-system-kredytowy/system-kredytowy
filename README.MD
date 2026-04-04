@@ -34,8 +34,6 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-### Najprościej: Docker Compose
-
 Z katalogu projektu uruchom:
 
 ```bash
