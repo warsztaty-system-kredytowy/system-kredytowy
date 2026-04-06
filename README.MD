@@ -34,9 +34,9 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-Póki co mamy dwa tryby uruchamiania aplikacji.
-(To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)
-(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)
+Póki co mamy dwa tryby uruchamiania aplikacji.<br/>
+(To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)<br/>
+(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)\
 
 Z katalogu projektu uruchom jeden z trybów:
 
