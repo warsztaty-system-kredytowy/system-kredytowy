@@ -36,7 +36,7 @@ Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`,
 
 Póki co mamy dwa tryby uruchamiania aplikacji.<br/>
 (To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)<br/>
-(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)\
+(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)
 
 Z katalogu projektu uruchom jeden z trybów:
 
