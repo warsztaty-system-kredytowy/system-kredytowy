@@ -34,11 +34,18 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-Z katalogu projektu uruchom:
+Póki co mamy dwa tryby uruchamiania aplikacji.
+(To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)
+(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)
+
+Z katalogu projektu uruchom jeden z trybów:
 
 ```bash
-# Windows (PowerShell / CMD) / Linux / macOS
-docker compose up --build
+# Tryb H2 (baza w pamięci)
+docker compose --profile h2 up --build
+
+# Tryb Postgres (kontener app + db)
+docker compose --profile postgres up --build
 ```
 
 Po starcie aplikacja jest dostępna na: **http://localhost:8080**
