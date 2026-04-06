@@ -1,5 +1,38 @@
 services:
-  app:
-    build: .
+  app-h2:
+    profiles: ["h2"]
+    image: "spring-boot:latest"
+    build:
+      context: .
+    container_name: app-h2
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=h2
+
+  app-postgres:
+    profiles: ["postgres"]
+    image: "spring-boot:latest"
+    build:
+      context: .
+    container_name: app-postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+    - db    
+    environment:
+      - SPRING_PROFILES_ACTIVE=postgres
+
+  db:
+    image: "postgres:latest"
+    container_name: postgres-db
+    profiles: ["postgres"]
+    environment:
+      - POSTGRES_DB=postgres_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data:
