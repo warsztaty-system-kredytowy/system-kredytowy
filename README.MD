@@ -19,6 +19,7 @@ Symulowany backend wniosków kredytowych: REST API, baza w pamięci, prosty form
 
 ## Uruchomienie
 
+### Lokalnie
 Z katalogu projektu:
 
 ```bash
@@ -29,7 +30,26 @@ Z katalogu projektu:
 ./gradlew bootRun
 ```
 
-Aplikacja startuje zwykle na **http://localhost:8080** (port domyślny Spring Boot).
+
+### Przez Dockera
+Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
+
+Póki co mamy dwa tryby uruchamiania aplikacji.<br/>
+(To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)<br/>
+(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)
+
+Z katalogu projektu uruchom jeden z trybów:
+
+```bash
+# Tryb H2 (baza w pamięci)
+docker compose --profile h2 up --build
+
+# Tryb Postgres (kontener app + db)
+docker compose --profile postgres up --build
+```
+
+Po starcie aplikacja jest dostępna na: **http://localhost:8080**
+
 
 ## Przydatne adresy (po starcie)
 
