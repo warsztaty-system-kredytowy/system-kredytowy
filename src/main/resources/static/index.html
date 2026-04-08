@@ -31,7 +31,7 @@
     </label><br><br>
 
     <label>Loan Term (years):<br>
-        <input type="number" id="loanTermYears" min="1" max="15">
+        <input type="number" id="loanTermYears" min="1">
     </label><br><br>
 
     <label>Monthly Income (PLN):<br>
@@ -116,7 +116,19 @@
             summaryEl.innerHTML = renderApplication(data);
             summaryEl.scrollIntoView({ behavior: 'smooth' });
         } else {
-            resultEl.innerHTML = '<span class="error">Something went wrong.</span>';
+            let errorMessage = 'Something went wrong. Fill in all fields.';
+            try {
+                const errorData = await response.json();
+                if (errorData?.errors?.loanPurpose) {
+                    errorMessage = errorData.errors.loanPurpose;
+                } else if (errorData?.detail) {
+                    errorMessage = errorData.detail;
+                } else if (errorData?.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (_) {
+            }
+            resultEl.innerHTML = `<span class="error">${errorMessage}</span>`;
             summaryEl.innerHTML = '';
         }
     });

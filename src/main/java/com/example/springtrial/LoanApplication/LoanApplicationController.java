@@ -1,5 +1,6 @@
 package com.example.springtrial.LoanApplication;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,7 +17,7 @@ public class LoanApplicationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LoanApplication submitApplication(@RequestBody LoanApplicationRequest request) {
+    public LoanApplication submitApplication(@Valid @RequestBody LoanApplicationRequest request) {
         return service.submit(request);
     }
 
