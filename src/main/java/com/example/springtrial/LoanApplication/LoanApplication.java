@@ -39,4 +39,8 @@ public class LoanApplication {
     // Current status of this application
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
+
+    // Reason provided when the application is denied
+    @Column(length = 2000)
+    private String denialReason;
 }
