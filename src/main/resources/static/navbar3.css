@@ -1,0 +1,93 @@
+
+.navbar {
+    display: flex;
+    background-color: #ffefbe;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative; 
+}
+
+.navbar-item {
+    background: none;
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    padding: 15px;
+    color: black;
+    font-size: 1.3rem;
+    text-decoration: none;
+    position: static; 
+    cursor: pointer;
+    flex: 1; 
+}
+
+.navbar-item:hover {
+    transition: background-color 1s ease;
+    background-color: #555;
+    color: white;
+}
+
+.navbar-item a {
+    display: block;
+    color: inherit;
+    background: none;
+    text-decoration: none;
+}
+.navbar-item a:hover {
+    color: inherit;
+    background: none;
+}
+
+
+.submenu {
+    display: none;
+    position: absolute; 
+    top: 100%; 
+    left: 0;
+    width: 100%; 
+    background-color: #5b5a5a;
+    z-index: 1000; 
+    border: 1px solid #ff5415;
+}
+
+.navbar-item.dropdown:hover .submenu {
+    display: block;
+}
+
+.submenu table {  
+    width: 100%; 
+    table-layout: fixed; 
+    border-collapse: collapse;
+    background-color: #272727;
+    text-align: center;
+}
+
+.submenu table td {
+    
+    color: #dedede;
+    cursor: pointer;
+    padding: 1.5vh;
+    border: none; 
+    height: auto;
+    width: 33.33%; 
+}
+
+.submenu table td a {
+    color: inherit;
+    text-decoration: none;
+    background-color: none;
+    display: block;
+}
+
+.submenu table td:hover {
+    padding: none;
+    background-color: #ff5429d4;
+    color: #4f4f4f;
+    transition: background-color 1s ease;
+}
+.submenu table td a:hover {
+    padding: none;
+    background: none;
+    color: #4f4f4f;
+    transition: background-color 1s ease;
+}

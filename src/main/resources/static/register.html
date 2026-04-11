@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Credit System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #1e3a8a;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+            background-color: #1e3a8a;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #842029;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            color: #0f5132;
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #1e3a8a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .password-requirements {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            display: none;
+        }
+
+        .requirement {
+            margin: 5px 0;
+        }
+
+        .requirement.met {
+            color: #0f5132;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .terms-checkbox input {
+            width: auto;
+            margin-right: 10px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .terms-checkbox label {
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .terms-checkbox a {
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h1>✨ Create Account</h1>
+    <p class="subtitle">Join Loan Application System</p>
+
+    <div id="successMsg" class="success"></div>
+    <div id="errorMsg" class="error"></div>
+
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <div id="passwordRequirements" class="password-requirements">
+                <div class="requirement" id="req-length">✓ At least 8 characters</div>
+                <div class="requirement" id="req-upper">✓ At least one uppercase letter</div>
+                <div class="requirement" id="req-lower">✓ At least one lowercase letter</div>
+                <div class="requirement" id="req-number">✓ At least one number</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <div class="terms-checkbox">
+            <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+            <label for="agreeTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button type="submit">
+            <span class="material-icons">check_circle</span>
+            <span>Create Account</span>
+        </button>
+    </form>
+
+    <div class="footer">
+        Already have an account? <a href="login.html">Sign In</a>
+    </div>
+</div>
+
+<script>
+    const registerForm = document.getElementById('registerForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+    const passwordInput = document.getElementById('password');
+    const passwordRequirements = document.getElementById('passwordRequirements');
+
+    passwordInput.addEventListener('focus', function() {
+        passwordRequirements.style.display = 'block';
+    });
+
+    passwordInput.addEventListener('input', function() {
+        validatePasswordRequirements(this.value);
+    });
+
+    function validatePasswordRequirements(password) {
+        const requirements = {
+            length: password.length >= 8,
+            upper: /[A-Z]/.test(password),
+            lower: /[a-z]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+
+        Object.entries(requirements).forEach(([key, met]) => {
+            const element = document.getElementById(`req-${key}`);
+            if (met) {
+                element.classList.add('met');
+            } else {
+                element.classList.remove('met');
+            }
+        });
+
+        return Object.values(requirements).every(val => val);
+    }
+
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+
+        hideMessages();
+
+        if (!fullName || !email || !phone || !username || !password || !confirmPassword) {
+            showError('Please fill in all fields');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            showError('Please enter a valid email address');
+            return;
+        }
+
+        if (!validatePasswordRequirements(password)) {
+            showError('Password does not meet all requirements');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+
+        if (!agreeTerms) {
+            showError('You must agree to the Terms of Service and Privacy Policy');
+            return;
+        }
+
+        const button = registerForm.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Creating Account...';
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fullName: fullName,
+                    email: email,
+                    phone: phone,
+                    username: username,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                showSuccess('Account created successfully! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 2000);
+            } else {
+                const data = await response.json();
+                showError(data.message || 'Registration failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            showError('Network error. Please try again.');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Create Account';
+        }
+    });
+
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    function showError(message) {
+        errorMsg.textContent = message;
+        errorMsg.classList.add('show');
+    }
+
+    function showSuccess(message) {
+        successMsg.textContent = message;
+        successMsg.classList.add('show');
+    }
+
+    function hideMessages() {
+        errorMsg.classList.remove('show');
+        successMsg.classList.remove('show');
+    }
+
+    document.getElementById('fullName').addEventListener('input', hideMessages);
+    document.getElementById('email').addEventListener('input', hideMessages);
+    document.getElementById('phone').addEventListener('input', hideMessages);
+    document.getElementById('username').addEventListener('input', hideMessages);
+    passwordInput.addEventListener('input', hideMessages);
+    document.getElementById('confirmPassword').addEventListener('input', hideMessages);
+</script>
+
+</body>
+</html>
