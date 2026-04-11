@@ -9,7 +9,7 @@ Symulowany backend wniosków kredytowych: REST API, baza w pamięci, prosty form
 | Język / JVM | Java **25** (Gradle Java toolchain) |
 | Framework | **Spring Boot** 4.0.4 |
 | API | Spring Web MVC (REST), **Springdoc OpenAPI** 3.0 (Swagger UI) |
-| Persystencja | **Spring Data JPA**, **Hibernate**, baza **H2** (in-memory) |
+| Persystencja | **Spring Data JPA**, **Hibernate**, baza **PostgreSQL** |
 | Bezpieczeństwo | Spring Security (obecnie szeroki dostęp + jawne `permitAll` pod dokumentację API) |
 | Narzędzia | **Gradle**, **Lombok**, JUnit 5 / Spring Boot Test, Testcontainers (testy) |
 
@@ -34,18 +34,10 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-Póki co mamy dwa tryby uruchamiania aplikacji.<br/>
-(To rozwiązanie jest chwilowe, do czasu decyzji o docelowej bazie danych.)<br/>
-(H2 jest opcją domyślną, natomiast Postgres jest opcją testową)
-
-Z katalogu projektu uruchom jeden z trybów:
+Z katalogu projektu uruchom:
 
 ```bash
-# Tryb H2 (baza w pamięci)
-docker compose --profile h2 up --build
-
-# Tryb Postgres (kontener app + db)
-docker compose --profile postgres up --build
+docker compose up --build
 ```
 
 Po starcie aplikacja jest dostępna na: **http://localhost:8080**
