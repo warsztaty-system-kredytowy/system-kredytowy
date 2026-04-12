@@ -1,14 +1,14 @@
-name: Backend CI
+name: App CI
 
 on:
   push:
   pull_request:
 
 jobs:
-  backend:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Build
         uses: actions/checkout@v5
 
       - name: Set up JDK 25
@@ -17,5 +17,5 @@ jobs:
           distribution: temurin
           java-version: "25"
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Tests
+        run: ./gradlew test
