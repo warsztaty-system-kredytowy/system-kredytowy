@@ -1,40 +1,58 @@
 services:
-  app-h2:
-    profiles: [ "h2" ]
+  app:
     image: "spring-boot:latest"
     build:
       context: .
-    container_name: app-h2
+      dockerfile: app.Dockerfile
+    container_name: app
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=h2
-
-  app-postgres:
-    profiles: [ "postgres" ]
-    image: "spring-boot:latest"
-    build:
-      context: .
-    container_name: app-postgres
-    ports:
-      - "8080:8080"
+    networks:
+      - lan
     depends_on:
       - db
-    environment:
-      - SPRING_PROFILES_ACTIVE=postgres
 
   db:
     image: "postgres:latest"
     container_name: postgres-db
-    profiles: [ "postgres" ]
+    ports:
+      - "5432:5432"
     environment:
-      - POSTGRES_DB=postgres_db
+      - POSTGRES_DB=default_db
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/
+      - ./init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    networks:
+      - lan
+
+  keycloak:
+    image: "keycloak:latest"
+    build:
+      context: .
+      dockerfile: keycloak.Dockerfile
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/keycloak_db
+      - KC_DB_USERNAME=user
+      - KC_DB_PASSWORD=password
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+      - KC_HOSTNAME=localhost
+      - KC_HTTP_ENABLED=true
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+    networks:
+      - lan
+
+networks:
+  lan:
+    driver: bridge
 
 volumes:
   postgres_data:
-
-
