@@ -37,6 +37,7 @@ Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`,
 Z katalogu projektu uruchom:
 
 ```bash
+echo "\n127.0.0.1  localhost keycloak.local" >> /etc/hosts
 docker compose up --build
 ```
 
