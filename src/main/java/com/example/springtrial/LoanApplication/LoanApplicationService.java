@@ -10,9 +10,11 @@ import java.util.Optional;
 public class LoanApplicationService {
 
     private final LoanApplicationRepository repository;
+    private final LlmEvaluationService llmEvaluationService;
 
-    public LoanApplicationService(LoanApplicationRepository repository) {
+    public LoanApplicationService(LoanApplicationRepository repository, LlmEvaluationService llmEvaluationService) {
         this.repository = repository;
+        this.llmEvaluationService = llmEvaluationService;
     }
 
     public LoanApplication submit(LoanApplicationRequest request) {
@@ -49,6 +51,13 @@ public class LoanApplicationService {
         return repository.findById(id).map(app -> {
             app.setStatus(LoanStatus.DENIED);
             app.setDenialReason(reason);
+            return repository.save(app);
+        });
+    }
+
+    public Optional<LoanApplication> evaluate(Long id) {
+        return repository.findById(id).map(app -> {
+            llmEvaluationService.evaluateApplication(app);
             return repository.save(app);
         });
     }
