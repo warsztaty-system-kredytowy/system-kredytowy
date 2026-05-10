@@ -6,6 +6,7 @@
     <title>Create Account - Credit System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
     <style>
         * {
             margin: 0;
@@ -204,11 +205,63 @@
         .terms-checkbox a:hover {
             text-decoration: underline;
         }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3a8a;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .header-logo .material-icons {
+            font-size: 1.6rem;
+        }
+
+        .client-badge {
+            background: #1e3a8a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
 
-<div class="register-container">
+<div class="header">
+    <div class="header-content">
+        <div class="header-logo">
+            <span class="material-icons">account_balance</span>
+            <span>Loan Application</span>
+        </div>
+        <div class="client-badge">CLIENT PORTAL</div>
+    </div>
+</div>
+
+<div class="register-container" style="margin-top: 80px;">
     <h1>✨ Create Account</h1>
     <p class="subtitle">Join Loan Application System</p>
 

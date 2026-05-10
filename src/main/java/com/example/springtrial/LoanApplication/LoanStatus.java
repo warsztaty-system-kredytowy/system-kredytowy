@@ -1,9 +1,9 @@
 package com.example.springtrial.LoanApplication;
 
 public enum LoanStatus {
-    CREATED,
-    PENDING_REVIEW,
-    ACCEPTED,
+    NEW,
+    IN_PROCESSING,
+    APPROVED,
     DENIED,
-    APPEAL
+    APPEALED
 }
