@@ -473,7 +473,9 @@
                 creditHistory: [
                     { amountLoaned: 5000, amountStillToPay: 1500, dateTillFullRepayment: '2026-06-15', monthlyCost: 150 },
                     { amountLoaned: 3000, amountStillToPay: 0, dateTillFullRepayment: '2025-12-31', monthlyCost: 0 }
-                ]
+                ],
+                llmScore: 6.5,
+                llmExplanation: "Klient ma stały dochód, ale zaciągnięte kredyty znacząco obniżają jego zdolność kredytową."
             },
             {
                 id: 1002,
@@ -637,6 +639,10 @@
                         <div class="app-detail-item">
                             <span class="material-icons">schedule</span>
                             <span>${app.loanTermYears} year(s)</span>
+                        </div>
+                        <div class="app-detail-item" style="color: ${app.llmScore >= 7.0 ? '#0f5132' : (app.llmScore >= 4.0 ? '#856404' : '#842029')}; font-weight: bold;">
+                            <span class="material-icons">auto_awesome</span>
+                            <span>AI Score: ${app.llmScore !== undefined && app.llmScore !== null ? app.llmScore : 'N/A'}/10</span>
                         </div>
                     </div>
                 </div>
