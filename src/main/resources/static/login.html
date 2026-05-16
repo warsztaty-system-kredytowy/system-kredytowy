@@ -6,6 +6,7 @@
     <title>Login - Credit System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
     <link rel="stylesheet" type="text/css" href="navbar.css">
     <style>
         * {
@@ -183,16 +184,82 @@
         }
 
         .divider {
-            margin: 20px 0;
+            margin: 30px 0;
             text-align: center;
-            color: #999;
-            font-size: 14px;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3a8a;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .header-logo .material-icons {
+            font-size: 1.6rem;
+        }
+
+        .client-badge {
+            background: #1e3a8a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .test-credentials {
+            background: #f8f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .test-credentials strong {
+            color: #1e3a8a;
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
+<div class="header">
+    <div class="header-content">
+        <div class="header-logo">
+            <span class="material-icons">account_balance</span>
+            <span>Loan Application</span>
+        </div>
+        <div class="client-badge">CLIENT PORTAL</div>
+    </div>
+</div>
+
+<div class="login-container" style="margin-top: 60px;">
     <h1>🔐 Login</h1>
     <p class="subtitle">Credit System</p>
 
@@ -222,13 +289,19 @@
 
     <div class="divider">Don't have an account?</div>
 
-    <a href="register.html" class="create-account-btn">
+    <a href="register.html" class="create-account-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: white; color: #1e3a8a; border: 2px solid #1e3a8a; border-radius: 6px; font-size: 16px; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; margin-top: 10px;">
         <span class="material-icons">person_add</span>
         <span>Create Account</span>
     </a>
 
-    <div class="footer" style="margin-top: 30px;">
-        Test credentials: user / password
+    <div class="test-credentials">
+        <strong>Test Credentials:</strong><br>
+        Username: user<br>
+        Password: password
+    </div>
+
+    <div class="footer" style="margin-top: 20px;">
+        <a href="home.html">← Back to Main Site</a>
     </div>
 </div>
 

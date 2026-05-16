@@ -75,40 +75,40 @@ public class LlmEvaluationService {
     private String buildPrompt(LoanApplication application) {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "Jesteś analitykiem ryzyka kredytowego w banku. Twoim zadaniem jest ocena poniższego wniosku kredytowego.\n");
-        sb.append("Przeanalizuj dane i zwróć odpowiedź w formacie JSON zawierającą dokładnie dwa pola:\n");
+                "You are a credit risk analyst at a bank. Your task is to evaluate the following loan application.\n");
+        sb.append("Analyze the data and return a response in JSON format containing exactly two fields:\n");
         sb.append(
-                "1. \"score\" (typ numeryczny od 0.0 do 10.0, gdzie 10.0 to wniosek doskonały, a 0.0 to wniosek krytycznie zły).\n");
+                "1. \"score\" (a numeric type from 0.0 to 10.0, where 10.0 is an excellent application and 0.0 is a critically bad application).\n");
         sb.append(
-                "2. \"explanation\" (typ string, zawierający merytoryczne uzasadnienie w języku polskim, dlaczego przyznano taką punktację. Wymień mocne i słabe strony klienta. UZASADNIENIE MUSI BYĆ KRÓTKIE I ZWIĘZŁE, MAKSYMALNIE 200 SŁÓW).\n\n");
+                "2. \"explanation\" (a string type containing a substantive justification in English for why such a score was given. List the applicant's strengths and weaknesses. THE EXPLANATION MUST BE SHORT AND CONCISE, MAXIMUM 200 WORDS).\n\n");
 
-        sb.append("Dane wniosku:\n");
-        sb.append("- Wnioskowana kwota: ").append(application.getLoanAmount()).append(" PLN\n");
-        sb.append("- Okres kredytowania: ").append(application.getLoanTermYears()).append(" lat\n");
-        sb.append("- Cel kredytu: ").append(application.getLoanPurpose()).append("\n");
-        sb.append("- Miesięczne dochody: ").append(application.getMonthlyIncome()).append(" PLN\n");
-        sb.append("- Miesięczne zobowiązania (stałe koszty): ").append(application.getMonthlyLiabilities())
+        sb.append("Application Data:\n");
+        sb.append("- Requested Amount: ").append(application.getLoanAmount()).append(" PLN\n");
+        sb.append("- Loan Term: ").append(application.getLoanTermYears()).append(" years\n");
+        sb.append("- Loan Purpose: ").append(application.getLoanPurpose()).append("\n");
+        sb.append("- Monthly Income: ").append(application.getMonthlyIncome()).append(" PLN\n");
+        sb.append("- Monthly Liabilities (fixed costs): ").append(application.getMonthlyLiabilities())
                 .append(" PLN\n");
 
-        sb.append("- Historia kredytowa (obecne obciążenia):\n");
+        sb.append("- Credit History (current liabilities):\n");
         if (application.getCreditHistory() == null || application.getCreditHistory().isEmpty()) {
-            sb.append("  Brak historii kredytowej.\n");
+            sb.append("  No credit history.\n");
         } else {
             for (CreditHistoryEntry entry : application.getCreditHistory()) {
-                sb.append("  * Pożyczono: ").append(entry.getAmountLoaned())
-                        .append(" PLN, Pozostało do spłaty: ").append(entry.getAmountStillToPay())
-                        .append(" PLN, Miesięczna rata: ").append(entry.getMonthlyCost())
+                sb.append("  * Loaned: ").append(entry.getAmountLoaned())
+                        .append(" PLN, Remaining to pay: ").append(entry.getAmountStillToPay())
+                        .append(" PLN, Monthly installment: ").append(entry.getMonthlyCost())
                         .append(" PLN\n");
             }
         }
 
-        sb.append("\nKryteria oceny:\n");
+        sb.append("\nEvaluation Criteria:\n");
         sb.append(
-                "1. Dochód rozporządzalny (dochody minus zobowiązania i raty) musi wystarczyć na spłatę nowej raty kredytu (która wynosi w przybliżeniu kwota / (okres * 12)).\n");
+                "1. Disposable income (income minus liabilities and installments) must be sufficient to pay the new loan installment (which is approximately amount / (term * 12)).\n");
         sb.append(
-                "2. Jeśli dochód rozporządzalny jest niższy niż szacowana nowa rata, wniosek należy ocenić nisko (0-3).\n");
-        sb.append("3. Dobry cel i pozytywna historia kredytowa mogą podnieść punktację.\n");
-        sb.append("\nZWRÓĆ TYLKO PRAWIDŁOWY OBIEKT JSON BEZ ZNACZNIKÓW MARKDOWN.");
+                "2. If disposable income is lower than the estimated new installment, the application should be scored low (0-3).\n");
+        sb.append("3. A good purpose and positive credit history can increase the score.\n");
+        sb.append("\nRETURN ONLY A VALID JSON OBJECT WITHOUT MARKDOWN TAGS.");
 
         return sb.toString();
     }

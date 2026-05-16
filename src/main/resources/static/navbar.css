@@ -34,7 +34,7 @@
 
 .navbar-links {
     display: flex;
-    gap: 0;
+    gap: 25px;
     flex: 1;
     align-items: center;
 }
@@ -61,11 +61,11 @@
 
 .navbar-item {
     position: relative;
-    background: none;
+    background-color: #1e3a8a;
     font-family: 'Roboto', sans-serif;
     text-align: center;
     padding: 10px 15px;
-    color: rgb(0, 0, 0);
+    color: white;
     font-size: 1rem;
     text-decoration: none;
     position: static; 
@@ -74,6 +74,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.2s ease-in-out;
 }
 
@@ -94,8 +96,8 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: rgba(30, 58, 138, 0.1);
-    color: #1e3a8a;
+    background-color: #152b69;
+    color: white;
 }
 
 

@@ -6,6 +6,7 @@
     <title>Review Application - Credit System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
     <style>
         * {
             margin: 0;
@@ -45,6 +46,17 @@
             font-size: 1.8rem;
         }
 
+        .employee-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
         .logout-btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -57,6 +69,7 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
+            margin-left: 15px;
         }
 
         .logout-btn:hover {
@@ -328,10 +341,16 @@
             <span class="material-icons">admin_panel_settings</span>
             <span>Application Review</span>
         </div>
-        <a href="#" class="logout-btn" onclick="logout(); return false;">
-            <span class="material-icons">logout</span>
-            <span>Logout</span>
-        </a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="employee-avatar">
+                <span class="material-icons">person</span>
+            </div>
+            <span id="employeeNameDisplay" style="font-weight: 500;"></span>
+            <a href="#" class="logout-btn" onclick="logout(); return false;">
+                <span class="material-icons">logout</span>
+                <span>Logout</span>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -349,6 +368,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         checkAuthentication();
+        
+        const employeeName = localStorage.getItem('employeeName');
+        if (employeeName) {
+            document.getElementById('employeeNameDisplay').textContent = employeeName;
+        }
+
         displayApplicationDetails();
     });
 
@@ -428,10 +453,10 @@
                         <span class="material-icons">auto_awesome</span>
                         AI Recommendation
                     </div>
-                    <p style="margin-bottom: 20px; color: #666;">Oceń ten wniosek za pomocą sztucznej inteligencji, aby uzyskać dodatkowe informacje i sugestie.</p>
+                    <p style="margin-bottom: 20px; color: #666;">Evaluate this application using AI to get additional insights and suggestions.</p>
                     <button class="btn" style="background: #3b82f6; color: white; margin: 0 auto;" onclick="generateAiScore(${app.id})" id="generateAiBtn">
                         <span class="material-icons">memory</span>
-                        Wyznacz Ocenę AI
+                        Generate AI Score
                     </button>
                 </div>
                 `}
@@ -653,7 +678,7 @@
     async function generateAiScore(appId) {
         const btn = document.getElementById('generateAiBtn');
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="material-icons" style="animation: spin 2s linear infinite;">autorenew</span> Generowanie...';
+        btn.innerHTML = '<span class="material-icons" style="animation: spin 2s linear infinite;">autorenew</span> Generating...';
         btn.disabled = true;
 
         try {
