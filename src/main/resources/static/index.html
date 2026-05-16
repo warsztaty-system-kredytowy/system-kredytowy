@@ -580,7 +580,7 @@
                 } catch (_) { }
                 resultEl.innerHTML = `<span class="msg-error">${errorMessage}</span>`;
                 summaryEl.innerHTML = '';
-                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
