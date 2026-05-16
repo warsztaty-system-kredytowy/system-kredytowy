@@ -51,4 +51,11 @@ public class LoanApplicationController {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Application not found with id: " + id));
     }
+
+    @PostMapping("/{id}/evaluate")
+    public LoanApplication evaluateApplication(@PathVariable("id") Long id) {
+        return service.evaluate(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Application not found with id: " + id));
+    }
 }

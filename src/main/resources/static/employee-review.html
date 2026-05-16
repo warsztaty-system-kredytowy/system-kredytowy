@@ -276,6 +276,48 @@
             padding: 60px 20px;
             color: #999;
         }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .ai-recommendation {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            border-left: 5px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e3a8a;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .ai-score {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-right: 15px;
+        }
+
+        .score-high { color: #0f5132; }
+        .score-medium { color: #856404; }
+        .score-low { color: #842029; }
+
+        .ai-explanation {
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 15px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -334,7 +376,9 @@
                 creditHistory: [
                     { amountLoaned: 5000, amountStillToPay: 1500, dateTillFullRepayment: '2026-06-15', monthlyCost: 150 },
                     { amountLoaned: 3000, amountStillToPay: 0, dateTillFullRepayment: '2025-12-31', monthlyCost: 0 }
-                ]
+                ],
+                llmScore: 6.5,
+                llmExplanation: "Klient ma stały dochód (5000 PLN), ale obecne zobowiązania (1200 PLN) oraz raty z historii kredytowej (150 PLN) zmniejszają jego dochód rozporządzalny do ok. 3650 PLN. Szacowana nowa rata to ok. 416 PLN. Klient poradzi sobie ze spłatą, ale historia kredytowa wskazuje na skłonność do zadłużania się."
             }
         };
         return mockApps[id];
@@ -363,6 +407,35 @@
             </div>
 
             <div class="review-content">
+                ${app.llmScore !== undefined && app.llmScore !== null ? `
+                <div class="ai-recommendation">
+                    <div class="ai-header">
+                        <span class="material-icons">auto_awesome</span>
+                        AI Recommendation
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 20px;">
+                        <div class="ai-score ${app.llmScore >= 7.0 ? 'score-high' : (app.llmScore >= 4.0 ? 'score-medium' : 'score-low')}">
+                            ${app.llmScore}/10
+                        </div>
+                        <div class="ai-explanation">
+                            ${app.llmExplanation || 'Brak uzasadnienia.'}
+                        </div>
+                    </div>
+                </div>
+                ` : `
+                <div class="ai-recommendation" style="text-align: center; padding: 30px;">
+                    <div class="ai-header" style="justify-content: center;">
+                        <span class="material-icons">auto_awesome</span>
+                        AI Recommendation
+                    </div>
+                    <p style="margin-bottom: 20px; color: #666;">Oceń ten wniosek za pomocą sztucznej inteligencji, aby uzyskać dodatkowe informacje i sugestie.</p>
+                    <button class="btn" style="background: #3b82f6; color: white; margin: 0 auto;" onclick="generateAiScore(${app.id})" id="generateAiBtn">
+                        <span class="material-icons">memory</span>
+                        Wyznacz Ocenę AI
+                    </button>
+                </div>
+                `}
+
                 <div class="info-section">
                     <div class="section-title">
                         <span class="material-icons">person</span>
@@ -574,6 +647,38 @@
         } catch (error) {
             console.error('Error:', error);
             alert('Error denying application');
+        }
+    }
+
+    async function generateAiScore(appId) {
+        const btn = document.getElementById('generateAiBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons" style="animation: spin 2s linear infinite;">autorenew</span> Generowanie...';
+        btn.disabled = true;
+
+        try {
+            const token = localStorage.getItem('employeeToken');
+            const response = await fetch(`/api/loans/${appId}/evaluate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            if (response.ok) {
+                const updatedApp = await response.json();
+                localStorage.setItem('selectedApplication', JSON.stringify(updatedApp));
+                displayApplicationDetails();
+            } else {
+                alert('Failed to generate AI evaluation');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Error generating AI score:', error);
+            alert('Error generating AI score');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     }
 
