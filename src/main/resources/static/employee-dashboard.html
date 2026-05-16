@@ -240,6 +240,21 @@
             color: #333;
         }
 
+        .status-accepted {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-denied {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-appeal {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
         .app-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -634,14 +649,7 @@
                     </div>
                 </div>
                 <div class="app-actions">
-                    <button class="action-btn btn-review" onclick="previewApplication(${app.id})" style="background-color: #6c757d;">
-                        <span class="material-icons">preview</span>
-                        Preview
-                    </button>
-                    <a href="javascript:viewApplication(${app.id})" class="action-btn btn-review">
-                        <span class="material-icons">visibility</span>
-                        Review
-                    </a>
+                    ${(app.status !== 'APPROVED' && app.status !== 'DENIED') ? `
                     <button class="action-btn btn-approve" onclick="approveApplication(${app.id})">
                         <span class="material-icons">check_circle</span>
                         Approve
@@ -649,6 +657,15 @@
                     <button class="action-btn btn-deny" onclick="denyApplication(${app.id})">
                         <span class="material-icons">cancel</span>
                         Deny
+                    </button>
+                    <a href="javascript:viewApplication(${app.id})" class="action-btn btn-review">
+                        <span class="material-icons">visibility</span>
+                        Review
+                    </a>
+                    ` : ''}
+                    <button class="action-btn btn-review" onclick="previewApplication(${app.id})" style="background-color: #6c757d;">
+                        <span class="material-icons">preview</span>
+                        Preview
                     </button>
                 </div>
             </div>

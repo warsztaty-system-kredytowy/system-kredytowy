@@ -23,8 +23,8 @@
 
         .container {
             max-width: 1000px;
-            margin: 100px auto 40px auto;
-            padding: 0 20px 100px 20px;
+            margin: 40px auto 40px auto;
+            padding: 0 20px 150px 20px;
         }
 
         h1 {
@@ -257,6 +257,7 @@
             margin-bottom: 10px;
             resize: vertical;
             font-family: 'Roboto', sans-serif;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -339,17 +340,17 @@
             </div>
 
             <div id="modalAppealSection" class="appeal-section" style="display: none;">
-                <h4 style="color: #842029; margin-top: 0;">Appeal Decision</h4>
+                <h2 style="color: #1e3a8a; margin-top: 0;">Appeal Decision</h2>
                 <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">If you believe this decision was made in error, you can submit an appeal once.</p>
                 <textarea id="appealReason" class="appeal-textarea" rows="3" placeholder="Explain why you are appealing this decision..."></textarea>
-                <button class="view-btn" onclick="submitAppeal()" style="margin-top: 0; background-color: #842029;">Submit Appeal</button>
+                <button class="view-btn" onclick="submitAppeal()" style="margin-top: 0;">Submit Appeal</button>
             </div>
         </div>
     </div>
 
     <!-- Fixed Footer -->
     <footer
-        style="position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to right, #1e3a8a, #3b82f6); color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1e3a8a; color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; font-family: 'Roboto', sans-serif;">
         <div style="margin-left: 20px; font-weight: 500;">
             Loan Application System
         </div>
@@ -456,7 +457,7 @@
                 <div class="app-amount">Amount: ${app.loanAmount} PLN</div>
                 <div class="app-amount">Term: ${app.loanTermYears} year(s)</div>
                 <div class="app-status status-${getStatusClass(app.status)}">
-                    ${app.status}
+                    ${app.status.replace('_', ' ')}
                 </div>
                 <div class="app-purpose">${app.loanPurpose}</div>
                 <div class="app-date">${new Date(app.submittedAt).toLocaleDateString('pl-PL')}</div>
@@ -495,7 +496,7 @@
                     <div><strong>Income:</strong> ${app.monthlyIncome || 0} PLN</div>
                     <div><strong>Liabilities:</strong> ${app.monthlyLiabilities || 0} PLN</div>
                     <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> ${app.loanPurpose || 'N/A'}</div>
-                    <div style="grid-column: 1 / -1;"><strong>Status:</strong> <span class="status-${getStatusClass(app.status)}" style="padding: 2px 6px; border-radius: 4px;">${app.status}</span></div>
+                    <div style="grid-column: 1 / -1;"><strong>Status:</strong> <span class="status-${getStatusClass(app.status)}" style="padding: 2px 6px; border-radius: 4px;">${app.status.replace('_', ' ')}</span></div>
                 </div>
             `;
             document.getElementById('modalAppDetails').innerHTML = detailsHtml;
@@ -506,7 +507,7 @@
                 timelineHtml = app.statusHistory.map(h => `
                     <div class="timeline-item">
                         <div class="timeline-date">${new Date(h.timestamp).toLocaleString('pl-PL')}</div>
-                        <div class="timeline-status">${h.status}</div>
+                        <div class="timeline-status">${h.status.replace('_', ' ')}</div>
                         <div class="timeline-note">${h.note || ''}</div>
                     </div>
                 `).join('');
@@ -547,6 +548,7 @@
                 });
 
                 if (response.ok) {
+                    alert('Appeal submitted successfully!');
                     closeModal();
                     loadApplications(); // Refresh list
                 } else {

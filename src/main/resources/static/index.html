@@ -27,8 +27,8 @@
 
         .container {
             max-width: 1000px;
-            margin: 100px auto 40px auto;
-            padding: 0 20px 100px 20px;
+            margin: 40px auto 40px auto;
+            padding: 0 20px 150px 20px;
         }
 
         h1 {
@@ -55,7 +55,7 @@
         }
 
         .credit-container {
-            background: white;
+            background: rgba(245, 245, 245, 0.6);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 28px 32px;
@@ -112,7 +112,8 @@
         }
 
         .btn-primary {
-            display: inline-flex;
+            display: flex;
+            justify-content: center;
             align-items: center;
             gap: 8px;
             background: #1e3a8a;
@@ -125,6 +126,7 @@
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
             transition: all 0.2s ease-in-out;
+            width: 100%;
         }
 
         .btn-primary:hover {
@@ -140,7 +142,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: none;
+            background: white;
             color: #1e3a8a;
             border: 2px solid #1e3a8a;
             border-radius: 6px;
@@ -179,7 +181,7 @@
         }
 
         .credit-entry {
-            background: #f8f9ff;
+            background: rgba(245, 245, 245, 0.6);
             border: 1px solid #d0d8f0;
             border-radius: 8px;
             padding: 16px;
@@ -211,7 +213,8 @@
 
         .submit-row {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: stretch;
             gap: 16px;
             margin-top: 8px;
         }
@@ -219,27 +222,38 @@
         #submitResult {
             margin-top: 8px;
             font-size: 14px;
+            scroll-margin-top: 100px;
         }
 
         .msg-error {
+            display: block;
             color: #842029;
             background: #f8d7da;
             border: 1px solid #f5c6cb;
             padding: 12px 16px;
             border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: bold;
+            text-align: center;
         }
 
         .msg-success {
+            display: block;
             color: #0f5132;
             background: #d1e7dd;
             border: 1px solid #badbcc;
             padding: 12px 16px;
             border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: bold;
+            text-align: center;
         }
 
         /* Summary */
         .summary-card {
-            background: white;
+            background: rgba(245, 245, 245, 0.6);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 28px 32px;
@@ -452,13 +466,13 @@
             </form>
 
             <!-- Application Summary (shown after submit) -->
-            <div id="applicationSummary"></div>
+            <div id="applicationSummary" style="scroll-margin-top: 100px;"></div>
         </div>
     </main>
 
     <!-- Fixed Footer -->
     <footer
-        style="position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to right, #1e3a8a, #3b82f6); color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1e3a8a; color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; font-family: 'Roboto', sans-serif;">
         <div style="margin-left: 20px; font-weight: 500;">
             Loan Application System
         </div>
@@ -549,7 +563,9 @@
                 const data = await response.json();
                 resultEl.innerHTML = `<span class="msg-success">Application submitted! Your ID is: <strong>${data.id}</strong>.</span>`;
                 summaryEl.innerHTML = renderApplication(data);
-                summaryEl.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('loanForm').reset();
+                document.getElementById('creditEntries').innerHTML = '';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 let errorMessage = 'Something went wrong. Please fill in all fields.';
                 try {
@@ -564,6 +580,7 @@
                 } catch (_) { }
                 resultEl.innerHTML = `<span class="msg-error">${errorMessage}</span>`;
                 summaryEl.innerHTML = '';
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
 
