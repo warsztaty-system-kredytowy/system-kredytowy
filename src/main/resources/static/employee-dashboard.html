@@ -6,6 +6,7 @@
     <title>Employee Dashboard - Credit Approval</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
     <style>
         * {
             margin: 0;
@@ -239,6 +240,21 @@
             color: #333;
         }
 
+        .status-accepted {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-denied {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-appeal {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
         .app-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -345,6 +361,38 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .timeline-item {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #1e3a8a;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .timeline-status {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .timeline-note {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -357,7 +405,9 @@
         </div>
         <div class="header-right">
             <div class="employee-info">
-                <div class="employee-avatar">👤</div>
+                <div class="employee-avatar">
+                    <span class="material-icons">person</span>
+                </div>
                 <span id="employeeName">Employee</span>
             </div>
             <a href="#" class="logout-btn" onclick="logout(); return false;">
@@ -434,6 +484,20 @@
     </div>
 </div>
 
+<!-- Preview Modal -->
+<div id="detailsModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;">
+    <div class="modal-content" style="background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; padding: 30px;">
+        <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">
+            <span class="material-icons">close</span>
+        </button>
+        <h2 style="color: #1e3a8a; margin-top: 0;">Application Preview</h2>
+        <div id="modalAppDetails" style="margin-top: 15px;"></div>
+        
+        <h3 style="color: #1e3a8a; margin-top: 25px; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px;">Timeline</h3>
+        <div id="modalTimeline" style="margin-top: 20px; border-left: 2px solid #1e3a8a; padding-left: 15px;"></div>
+    </div>
+</div>
+
 <script>
     let allApplications = [];
     let currentFilter = 'all';
@@ -468,14 +532,11 @@
                 monthlyIncome: 5000,
                 monthlyLiabilities: 1200,
                 loanPurpose: 'Zakup samochodu osobowego',
-                status: 'CREATED',
+                status: 'NEW',
                 submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                creditHistory: [
-                    { amountLoaned: 5000, amountStillToPay: 1500, dateTillFullRepayment: '2026-06-15', monthlyCost: 150 },
-                    { amountLoaned: 3000, amountStillToPay: 0, dateTillFullRepayment: '2025-12-31', monthlyCost: 0 }
-                ],
+                creditHistory: [],
                 llmScore: 6.5,
-                llmExplanation: "Klient ma stały dochód, ale zaciągnięte kredyty znacząco obniżają jego zdolność kredytową."
+                statusHistory: [ { status: 'NEW', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), note: 'Application submitted' } ]
             },
             {
                 id: 1002,
@@ -483,74 +544,15 @@
                 loanTermYears: 10,
                 monthlyIncome: 8000,
                 monthlyLiabilities: 2000,
-                loanPurpose: 'Remonty i ullepszenia domu',
-                status: 'CREATED',
+                loanPurpose: 'Remonty',
+                status: 'APPEALED',
                 submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-                creditHistory: [
-                    { amountLoaned: 20000, amountStillToPay: 8000, dateTillFullRepayment: '2028-03-20', monthlyCost: 400 }
+                creditHistory: [],
+                statusHistory: [ 
+                    { status: 'NEW', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), note: 'Application submitted' },
+                    { status: 'DENIED', timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), note: 'High liabilities' },
+                    { status: 'APPEALED', timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), note: 'User appealed. Reason: Additional income' }
                 ]
-            },
-            {
-                id: 1003,
-                loanAmount: 15000,
-                loanTermYears: 3,
-                monthlyIncome: 4500,
-                monthlyLiabilities: 800,
-                loanPurpose: 'Spłata pożyczek i konsolidacja długów',
-                status: 'PENDING_REVIEW',
-                submittedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-                creditHistory: [
-                    { amountLoaned: 10000, amountStillToPay: 5000, dateTillFullRepayment: '2026-08-10', monthlyCost: 300 },
-                    { amountLoaned: 7000, amountStillToPay: 2500, dateTillFullRepayment: '2026-11-05', monthlyCost: 250 }
-                ]
-            },
-            {
-                id: 1004,
-                loanAmount: 35000,
-                loanTermYears: 7,
-                monthlyIncome: 6500,
-                monthlyLiabilities: 1500,
-                loanPurpose: 'Inwestycja w edukację i szkolenia zawodowe',
-                status: 'CREATED',
-                submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-                creditHistory: []
-            },
-            {
-                id: 1005,
-                loanAmount: 12000,
-                loanTermYears: 2,
-                monthlyIncome: 3500,
-                monthlyLiabilities: 600,
-                loanPurpose: 'Zakup sprzętu medycznego i stomatologicznego',
-                status: 'CREATED',
-                submittedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-                creditHistory: [
-                    { amountLoaned: 8000, amountStillToPay: 0, dateTillFullRepayment: '2025-11-20', monthlyCost: 0 }
-                ]
-            },
-            {
-                id: 1006,
-                loanAmount: 45000,
-                loanTermYears: 8,
-                monthlyIncome: 7000,
-                monthlyLiabilities: 1800,
-                loanPurpose: 'Zakup wyposażenia biznesowego do firmy',
-                status: 'PENDING_REVIEW',
-                submittedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-                creditHistory: [
-                    { amountLoaned: 30000, amountStillToPay: 15000, dateTillFullRepayment: '2027-06-30', monthlyCost: 500 }
-                ]
-            },
-            {
-                id: 1007,
-                loanAmount: 8000,
-                loanTermYears: 1,
-                monthlyIncome: 3000,
-                monthlyLiabilities: 500,
-                loanPurpose: 'Pokrycie wydatków nadzwyczajnych',
-                status: 'CREATED',
-                submittedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-                creditHistory: []
             }
         ];
     }
@@ -589,8 +591,8 @@
     }
 
     function updateStats() {
-        const pending = allApplications.filter(app => app.status === 'CREATED' || app.status === 'PENDING_REVIEW').length;
-        const approved = allApplications.filter(app => app.status === 'ACCEPTED').length;
+        const pending = allApplications.filter(app => app.status === 'NEW' || app.status === 'IN_PROCESSING' || app.status === 'APPEALED').length;
+        const approved = allApplications.filter(app => app.status === 'APPROVED').length;
         const denied = allApplications.filter(app => app.status === 'DENIED').length;
         const total = allApplications.reduce((sum, app) => sum + (parseFloat(app.loanAmount) || 0), 0);
 
@@ -647,10 +649,7 @@
                     </div>
                 </div>
                 <div class="app-actions">
-                    <a href="javascript:viewApplication(${app.id})" class="action-btn btn-review">
-                        <span class="material-icons">visibility</span>
-                        Review
-                    </a>
+                    ${(app.status !== 'APPROVED' && app.status !== 'DENIED') ? `
                     <button class="action-btn btn-approve" onclick="approveApplication(${app.id})">
                         <span class="material-icons">check_circle</span>
                         Approve
@@ -658,6 +657,15 @@
                     <button class="action-btn btn-deny" onclick="denyApplication(${app.id})">
                         <span class="material-icons">cancel</span>
                         Deny
+                    </button>
+                    <a href="javascript:viewApplication(${app.id})" class="action-btn btn-review">
+                        <span class="material-icons">visibility</span>
+                        Review
+                    </a>
+                    ` : ''}
+                    <button class="action-btn btn-review" onclick="previewApplication(${app.id})" style="background-color: #6c757d;">
+                        <span class="material-icons">preview</span>
+                        Preview
                     </button>
                 </div>
             </div>
@@ -677,29 +685,40 @@
 
     function getStatusClass(status) {
         const map = {
-            'CREATED': 'created',
-            'PENDING_REVIEW': 'pending',
-            'ACCEPTED': 'accepted',
+            'NEW': 'created',
+            'IN_PROCESSING': 'pending',
+            'APPROVED': 'accepted',
             'DENIED': 'denied',
-            'APPEAL': 'appeal'
+            'APPEALED': 'appeal'
         };
         return map[status] || 'created';
     }
 
     function getStatusLabel(status) {
         const map = {
-            'CREATED': 'New',
-            'PENDING_REVIEW': 'Pending',
-            'ACCEPTED': 'Accepted',
+            'NEW': 'New',
+            'IN_PROCESSING': 'Processing',
+            'APPROVED': 'Approved',
             'DENIED': 'Denied',
-            'APPEAL': 'Appeal'
+            'APPEALED': 'Appealed'
         };
         return map[status] || status;
     }
 
-    function viewApplication(appId) {
+    async function viewApplication(appId) {
         const app = allApplications.find(a => a.id === appId);
         if (app) {
+            try {
+                if (app.status === 'NEW') {
+                    const token = localStorage.getItem('employeeToken');
+                    await fetch('/api/loans/' + appId + '/review', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
             localStorage.setItem('selectedApplication', JSON.stringify(app));
             window.location.href = 'employee-review.html';
         }
@@ -761,6 +780,52 @@
     function showEmptyState() {
         document.getElementById('emptyState').style.display = 'block';
         document.getElementById('applicationsContainer').innerHTML = '';
+    }
+
+    function previewApplication(appId) {
+        const app = allApplications.find(a => a.id === appId);
+        if (!app) return;
+        
+        // Populate details
+        const detailsHtml = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95rem; color: #444;">
+                <div><strong>Amount:</strong> ${app.loanAmount || 0} PLN</div>
+                <div><strong>Term:</strong> ${app.loanTermYears || 0} years</div>
+                <div><strong>Income:</strong> ${app.monthlyIncome || 0} PLN</div>
+                <div><strong>Liabilities:</strong> ${app.monthlyLiabilities || 0} PLN</div>
+                <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> ${app.loanPurpose || 'N/A'}</div>
+                <div style="grid-column: 1 / -1;"><strong>Status:</strong> <span class="status-${getStatusClass(app.status)}" style="padding: 2px 6px; border-radius: 4px;">${app.status}</span></div>
+            </div>
+        `;
+        document.getElementById('modalAppDetails').innerHTML = detailsHtml;
+
+        // Populate timeline
+        let timelineHtml = '';
+        if (app.statusHistory && app.statusHistory.length > 0) {
+            timelineHtml = app.statusHistory.map(h => `
+                <div class="timeline-item">
+                    <div class="timeline-date">${new Date(h.timestamp).toLocaleString('pl-PL')}</div>
+                    <div class="timeline-status">${h.status}</div>
+                    <div class="timeline-note">${h.note || ''}</div>
+                </div>
+            `).join('');
+        } else {
+            timelineHtml = '<p style="color: #666; font-size: 0.9rem; margin-top: 0;">No history available.</p>';
+        }
+        document.getElementById('modalTimeline').innerHTML = timelineHtml;
+
+        document.getElementById('detailsModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        const modal = document.getElementById('detailsModal');
+        if (event.target == modal) {
+            closeModal();
+        }
     }
 
     function logout() {

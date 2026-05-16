@@ -58,4 +58,21 @@ public class LoanApplicationController {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Application not found with id: " + id));
     }
+
+    @PostMapping("/{id}/review")
+    public LoanApplication startReview(@PathVariable("id") Long id) {
+        return service.startReview(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Application not found with id: " + id));
+    }
+
+    @PostMapping("/{id}/appeal")
+    public LoanApplication appealApplication(
+            @PathVariable("id") Long id,
+            @RequestBody(required = false) AppealRequest body) {
+        String reason = (body != null) ? body.getReason() : null;
+        return service.appeal(id, reason)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Application not found with id: " + id));
+    }
 }

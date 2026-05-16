@@ -1,5 +1,6 @@
 package com.example.springtrial.LoanApplication;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,4 +42,11 @@ public class LoanApplication {
 
     @Column(length = 4000)
     private String llmExplanation;
+
+    private boolean isFinalDecision = false;
+
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @OrderBy("timestamp DESC")
+    private List<ApplicationStatusHistory> statusHistory;
 }

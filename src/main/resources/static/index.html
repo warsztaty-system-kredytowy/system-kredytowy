@@ -1,24 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Application - Loan Application</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
     <link rel="stylesheet" type="text/css" href="stylE.css">
     <link rel="stylesheet" type="text/css" href="navbar.css">
+    <link rel="stylesheet" type="text/css" href="scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="media.css">
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #f5f5f5; }
-        main { margin-top: 80px; }
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px 60px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin-bottom: 80px;
+        }
 
-        h1 { color: #1e3a8a; margin-bottom: 8px; }
-        h2 { color: #1e3a8a; margin: 32px 0 16px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
-        h3 { color: #1e3a8a; margin: 24px 0 12px; font-size: 1rem; display: flex; align-items: center; gap: 6px; }
+        main {
+            margin-top: 80px;
+        }
 
-        .card {
-            background: white;
+        .container {
+            max-width: 1000px;
+            margin: 40px auto 40px auto;
+            padding: 0 20px 150px 20px;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            color: #1e3a8a;
+            margin: 32px 0 16px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h3 {
+            color: #1e3a8a;
+            margin: 24px 0 12px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .credit-container {
+            background: rgba(245, 245, 245, 0.6);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 28px 32px;
@@ -69,10 +106,14 @@
             box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         }
 
-        textarea { resize: vertical; min-height: 90px; }
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
 
         .btn-primary {
-            display: inline-flex;
+            display: flex;
+            justify-content: center;
             align-items: center;
             gap: 8px;
             background: #1e3a8a;
@@ -85,6 +126,7 @@
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
             transition: all 0.2s ease-in-out;
+            width: 100%;
         }
 
         .btn-primary:hover {
@@ -92,13 +134,15 @@
             box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
         }
 
-        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
 
         .btn-secondary {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: none;
+            background: white;
             color: #1e3a8a;
             border: 2px solid #1e3a8a;
             border-radius: 6px;
@@ -132,10 +176,12 @@
             transition: all 0.2s;
         }
 
-        .btn-danger:hover { background: #f8d7da; }
+        .btn-danger:hover {
+            background: #f8d7da;
+        }
 
         .credit-entry {
-            background: #f8f9ff;
+            background: rgba(245, 245, 245, 0.6);
             border: 1px solid #d0d8f0;
             border-radius: 8px;
             padding: 16px;
@@ -167,42 +213,66 @@
 
         .submit-row {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: stretch;
             gap: 16px;
             margin-top: 8px;
         }
 
-        #submitResult { margin-top: 8px; font-size: 14px; }
+        #submitResult {
+            margin-top: 8px;
+            font-size: 14px;
+            scroll-margin-top: 100px;
+        }
 
         .msg-error {
+            display: block;
             color: #842029;
             background: #f8d7da;
             border: 1px solid #f5c6cb;
             padding: 12px 16px;
             border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: bold;
+            text-align: center;
         }
 
         .msg-success {
+            display: block;
             color: #0f5132;
             background: #d1e7dd;
             border: 1px solid #badbcc;
             padding: 12px 16px;
             border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: bold;
+            text-align: center;
         }
 
         /* Summary */
         .summary-card {
-            background: white;
+            background: rgba(245, 245, 245, 0.6);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 28px 32px;
-            margin-top: 8px;
+            margin-top: 32px;
         }
 
-        .summary-card h2 { margin-top: 0; }
+        .summary-card h2 {
+            margin-top: 0;
+        }
 
-        .summary-field { margin: 6px 0; font-size: 15px; color: #333; }
-        .summary-field strong { color: #1e3a8a; }
+        .summary-field {
+            margin: 6px 0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .summary-field strong {
+            color: #1e3a8a;
+        }
 
         .status-badge {
             display: inline-block;
@@ -211,11 +281,31 @@
             font-weight: 600;
             font-size: 0.82em;
         }
-        .status-CREATED        { background: #e0e0e0; color: #333; }
-        .status-PENDING_REVIEW { background: #fff3cd; color: #856404; }
-        .status-ACCEPTED       { background: #d1e7dd; color: #0f5132; }
-        .status-DENIED         { background: #f8d7da; color: #842029; }
-        .status-APPEAL         { background: #cfe2ff; color: #084298; }
+
+        .status-CREATED {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .status-PENDING_REVIEW {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-ACCEPTED {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-DENIED {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-APPEAL {
+            background: #cfe2ff;
+            color: #084298;
+        }
 
         .summary-table {
             width: 100%;
@@ -237,155 +327,175 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .summary-table tr:last-child td { border-bottom: none; }
-        .summary-table tr:nth-child(even) td { background: #f8f9ff; }
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
 
-        .divider { border: none; border-top: 1px solid #e0e0e0; margin: 24px 0; }
+        .summary-table tr:nth-child(even) td {
+            background: #f8f9ff;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 24px 0;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="mainnav">
-    <div class="navbar-logo">
-        <span class="material-icons">account_balance</span>
-        <span class="logo-text">Loan Application</span>
-    </div>
+    <div class="mainnav">
+        <div class="navbar-logo">
+            <span class="material-icons">account_balance</span>
+            <span class="logo-text">Loan Application</span>
+        </div>
 
-    <div class="navbar-links">
-        <a href="home.html" class="navbar-item">
-            <span class="material-icons">home</span>
-            <span>Home</span>
+        <div class="navbar-links">
+            <a href="home.html" class="navbar-item">
+                <span class="material-icons">home</span>
+                <span>Home</span>
+            </a>
+
+            <div class="navbar-item dropdown">
+                <a href="applications.html">
+                    <span class="material-icons">folder</span>
+                    <span>My Applications</span>
+                </a>
+            </div>
+
+            <div class="navbar-item dropdown">
+                <a href="index.html">
+                    <span class="material-icons">edit</span>
+                    <span>Submit Application</span>
+                </a>
+            </div>
+
+            <div class="navbar-item dropdown">
+                <a href="about-us.html">
+                    <span class="material-icons">info</span>
+                    <span>About Us</span>
+                </a>
+            </div>
+        </div>
+
+        <a href="login.html" class="navbar-item login-btn"
+            style="background-color: #1e3a8a; color: white !important; padding: 10px 20px; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+            <span class="material-icons">login</span>
+            <span>Sign In</span>
         </a>
-
-        <div class="navbar-item dropdown">
-            <a href="applications.html">
-                <span class="material-icons">folder</span>
-                <span>My Applications</span>
-            </a>
-        </div>
-
-        <div class="navbar-item dropdown">
-            <a href="index.html">
-                <span class="material-icons">edit</span>
-                <span>Submit Application</span>
-            </a>
-        </div>
-
-        <div class="navbar-item dropdown">
-            <a href="about-us.html">
-                <span class="material-icons">mail</span>
-                <span>Contact</span>
-            </a>
-        </div>
-
-        <div class="navbar-item dropdown">
-            <a href="about-us.html">
-                <span class="material-icons">info</span>
-                <span>About Us</span>
-            </a>
-        </div>
     </div>
 
-    <a href="login.html" class="navbar-item login-btn">
-        <span class="material-icons">login</span>
-        <span>Log in</span>
-    </a>
-    <a href="employee-login.html" class="navbar-item" style="padding: 8px 12px; font-size: 0.75rem; opacity: 0.7;">
-        <span class="material-icons" style="font-size: 1rem;">admin_panel_settings</span>
-    </a>
-</div>
-
-<main class="content">
-    <div class="container">
-        <h1>Submit New Application</h1>
-        <p style="color:#666; margin-bottom: 28px;">Fill in the form below to apply for a loan.</p>
-
-        <form id="loanForm">
-            <!-- Loan Details -->
-            <div class="card">
-                <h2>
-                    <span class="material-icons" style="font-size: 1.3rem;">attach_money</span>
-                    Loan Details
-                </h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="loanAmount">Loan Amount (PLN)</label>
-                        <input type="number" id="loanAmount" step="0.01" min="0" placeholder="e.g. 25000">
-                    </div>
-                    <div class="form-group">
-                        <label for="loanTermYears">Loan Term (years)</label>
-                        <input type="number" id="loanTermYears" min="1" placeholder="e.g. 5">
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="loanPurpose">Loan Purpose</label>
-                        <textarea id="loanPurpose" rows="3" placeholder="Describe the purpose of the loan..."></textarea>
-                    </div>
-                </div>
+    <main class="content">
+        <div class="container">
+            <div class="credit-container" style="margin-bottom: 24px;">
+                <h1>Submit New Application</h1>
+                <p style="color:#666; margin-bottom: 0;">Fill in the form below to apply for a loan.</p>
             </div>
 
-            <!-- Financial Info -->
-            <div class="card">
-                <h2>
-                    <span class="material-icons" style="font-size: 1.3rem;">account_balance_wallet</span>
-                    Financial Information
-                </h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="monthlyIncome">Monthly Income (PLN)</label>
-                        <input type="number" id="monthlyIncome" step="0.01" placeholder="e.g. 6000">
-                    </div>
-                    <div class="form-group">
-                        <label for="monthlyLiabilities">Monthly Liabilities (PLN)</label>
-                        <input type="number" id="monthlyLiabilities" step="0.01" placeholder="e.g. 500">
+            <form id="loanForm">
+                <!-- Loan Details -->
+                <div class="credit-container" style="margin-bottom: 24px;">
+                    <h2>
+                        <span class="material-icons" style="font-size: 1.3rem;">attach_money</span>
+                        Loan Details
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="loanAmount">Loan Amount (PLN)</label>
+                            <input type="number" id="loanAmount" step="0.01" min="0" placeholder="e.g. 25000">
+                        </div>
+                        <div class="form-group">
+                            <label for="loanTermYears">Loan Term (years)</label>
+                            <input type="number" id="loanTermYears" min="1" placeholder="e.g. 5">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="loanPurpose">Loan Purpose</label>
+                            <textarea id="loanPurpose" rows="3"
+                                placeholder="Describe the purpose of the loan..."></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Credit History -->
-            <div class="card">
-                <h2>
-                    <span class="material-icons" style="font-size: 1.3rem;">history</span>
-                    Credit History
-                </h2>
-                <p style="color:#666; font-size:14px; margin-bottom:16px;">
-                    Optionally add your existing credit obligations.
-                </p>
+                <!-- Financial Info -->
+                <div class="credit-container" style="margin-bottom: 24px;">
+                    <h2>
+                        <span class="material-icons" style="font-size: 1.3rem;">account_balance_wallet</span>
+                        Financial Information
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="monthlyIncome">Monthly Income (PLN)</label>
+                            <input type="number" id="monthlyIncome" step="0.01" placeholder="e.g. 6000">
+                        </div>
+                        <div class="form-group">
+                            <label for="monthlyLiabilities">Monthly Liabilities (PLN)</label>
+                            <input type="number" id="monthlyLiabilities" step="0.01" placeholder="e.g. 500">
+                        </div>
+                    </div>
+                </div>
 
-                <div id="creditHistoryContainer"></div>
+                <!-- Credit History -->
+                <div class="credit-container" style="margin-bottom: 24px;">
+                    <h2>
+                        <span class="material-icons" style="font-size: 1.3rem;">history</span>
+                        Credit History
+                    </h2>
+                    <p style="color:#666; font-size:14px; margin-bottom:16px;">
+                        Optionally add your existing credit obligations.
+                    </p>
 
-                <div class="add-entry-area">
-                    <button type="button" class="btn-secondary" onclick="addCreditEntry()">
-                        <span class="material-icons" style="font-size: 1.1rem;">add</span>
-                        Add Credit Entry
+                    <div id="creditHistoryContainer"></div>
+
+                    <div class="add-entry-area">
+                        <button type="button" class="btn-secondary" onclick="addCreditEntry()">
+                            <span class="material-icons" style="font-size: 1.1rem;">add</span>
+                            Add Credit Entry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-row">
+                    <button type="submit" class="btn-primary">
+                        <span class="material-icons" style="font-size: 1.1rem;">send</span>
+                        Submit Application
                     </button>
+                    <div id="submitResult"></div>
                 </div>
-            </div>
+            </form>
 
-            <!-- Submit -->
-            <div class="submit-row">
-                <button type="submit" class="btn-primary">
-                    <span class="material-icons" style="font-size: 1.1rem;">send</span>
-                    Submit Application
-                </button>
-                <div id="submitResult"></div>
-            </div>
-        </form>
+            <!-- Application Summary (shown after submit) -->
+            <div id="applicationSummary" style="scroll-margin-top: 100px;"></div>
+        </div>
+    </main>
 
-        <!-- Application Summary (shown after submit) -->
-        <div id="applicationSummary"></div>
-    </div>
-</main>
+    <!-- Fixed Footer -->
+    <footer
+        style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1e3a8a; color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; font-family: 'Roboto', sans-serif;">
+        <div style="margin-left: 20px; font-weight: 500;">
+            Loan Application System
+        </div>
+        <div>
+            © 2026 All Rights Reserved |
+            Photo by <a href="https://unsplash.com/photos/a-person-stacking-coins-on-top-of-a-table-jpqyfK7GB4w"
+                style="color: #fff; text-decoration: underline;">Towfiqu barbhuiya</a> on Unsplash
+        </div>
+        <div style="margin-right: 20px;">
+            <a href="about-us.html" style="color: #fff; text-decoration: none; margin-left: 15px;">About Us</a>
+        </div>
+    </footer>
 
-<script>
-    let entryCount = 0;
+    <script>
+        let entryCount = 0;
 
-    function addCreditEntry() {
-        entryCount++;
-        const container = document.getElementById('creditHistoryContainer');
-        const div = document.createElement('div');
-        div.className = 'credit-entry';
-        div.id = 'entry-' + entryCount;
-        div.innerHTML = `
+        function addCreditEntry() {
+            entryCount++;
+            const container = document.getElementById('creditHistoryContainer');
+            const div = document.createElement('div');
+            div.className = 'credit-entry';
+            div.id = 'entry-' + entryCount;
+            div.innerHTML = `
             <div class="credit-entry-header">
                 <span class="credit-entry-title">
                     <span class="material-icons" style="font-size:1rem; vertical-align:middle;">credit_card</span>
@@ -415,75 +525,78 @@
                 </div>
             </div>
         `;
-        container.appendChild(div);
-    }
+            container.appendChild(div);
+        }
 
-    function removeEntry(id) {
-        document.getElementById('entry-' + id).remove();
-    }
+        function removeEntry(id) {
+            document.getElementById('entry-' + id).remove();
+        }
 
-    document.getElementById('loanForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        document.getElementById('loanForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        const entries = document.querySelectorAll('.credit-entry');
-        const creditHistory = Array.from(entries).map(entry => ({
-            amountLoaned:          entry.querySelector('.amountLoaned').value,
-            amountStillToPay:      entry.querySelector('.amountStillToPay').value,
-            dateTillFullRepayment: entry.querySelector('.dateTillFullRepayment').value,
-            monthlyCost:           entry.querySelector('.monthlyCost').value
-        }));
+            const entries = document.querySelectorAll('.credit-entry');
+            const creditHistory = Array.from(entries).map(entry => ({
+                amountLoaned: entry.querySelector('.amountLoaned').value,
+                amountStillToPay: entry.querySelector('.amountStillToPay').value,
+                dateTillFullRepayment: entry.querySelector('.dateTillFullRepayment').value,
+                monthlyCost: entry.querySelector('.monthlyCost').value
+            }));
 
-        const response = await fetch('/api/loans', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                monthlyIncome:      document.getElementById('monthlyIncome').value,
-                monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
-                loanAmount:         document.getElementById('loanAmount').value,
-                loanTermYears:      document.getElementById('loanTermYears').value,
-                loanPurpose:        document.getElementById('loanPurpose').value,
-                creditHistory:      creditHistory
-            })
+            const response = await fetch('/api/loans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    monthlyIncome: document.getElementById('monthlyIncome').value,
+                    monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
+                    loanAmount: document.getElementById('loanAmount').value,
+                    loanTermYears: document.getElementById('loanTermYears').value,
+                    loanPurpose: document.getElementById('loanPurpose').value,
+                    creditHistory: creditHistory
+                })
+            });
+
+            const resultEl = document.getElementById('submitResult');
+            const summaryEl = document.getElementById('applicationSummary');
+
+            if (response.ok) {
+                const data = await response.json();
+                resultEl.innerHTML = `<span class="msg-success">Application submitted! Your ID is: <strong>${data.id}</strong>.</span>`;
+                summaryEl.innerHTML = renderApplication(data);
+                document.getElementById('loanForm').reset();
+                document.getElementById('creditEntries').innerHTML = '';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                let errorMessage = 'Something went wrong. Please fill in all fields.';
+                try {
+                    const errorData = await response.json();
+                    if (errorData?.errors?.loanPurpose) {
+                        errorMessage = errorData.errors.loanPurpose;
+                    } else if (errorData?.detail) {
+                        errorMessage = errorData.detail;
+                    } else if (errorData?.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (_) { }
+                resultEl.innerHTML = `<span class="msg-error">${errorMessage}</span>`;
+                summaryEl.innerHTML = '';
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
 
-        const resultEl = document.getElementById('submitResult');
-        const summaryEl = document.getElementById('applicationSummary');
-
-        if (response.ok) {
-            const data = await response.json();
-            resultEl.innerHTML = `<span class="msg-success">Application submitted! Your ID is: <strong>${data.id}</strong>.</span>`;
-            summaryEl.innerHTML = renderApplication(data);
-            summaryEl.scrollIntoView({ behavior: 'smooth' });
-        } else {
-            let errorMessage = 'Something went wrong. Please fill in all fields.';
-            try {
-                const errorData = await response.json();
-                if (errorData?.errors?.loanPurpose) {
-                    errorMessage = errorData.errors.loanPurpose;
-                } else if (errorData?.detail) {
-                    errorMessage = errorData.detail;
-                } else if (errorData?.message) {
-                    errorMessage = errorData.message;
-                }
-            } catch (_) {}
-            resultEl.innerHTML = `<span class="msg-error">${errorMessage}</span>`;
-            summaryEl.innerHTML = '';
-        }
-    });
-
-    function renderApplication(data) {
-        const creditRows = (data.creditHistory && data.creditHistory.length > 0)
-            ? data.creditHistory.map(e => `
+        function renderApplication(data) {
+            const creditRows = (data.creditHistory && data.creditHistory.length > 0)
+                ? data.creditHistory.map(e => `
                 <tr>
                     <td>${e.amountLoaned ?? '—'} PLN</td>
                     <td>${e.amountStillToPay ?? '—'} PLN</td>
                     <td>${e.dateTillFullRepayment ?? '—'}</td>
                     <td>${e.monthlyCost ?? '—'} PLN</td>
                 </tr>`).join('')
-            : '<tr><td colspan="4" style="color:#999; font-style:italic;">No credit history provided.</td></tr>';
+                : '<tr><td colspan="4" style="color:#999; font-style:italic;">No credit history provided.</td></tr>';
 
-        return `
-        <div class="summary-card">
+            return `
+        <div class="summary-card credit-container">
             <h2>
                 <span class="material-icons" style="font-size:1.3rem;">check_circle</span>
                 Your Submitted Application
@@ -517,7 +630,8 @@
                 <tbody>${creditRows}</tbody>
             </table>
         </div>`;
-    }
-</script>
+        }
+    </script>
 </body>
+
 </html>
