@@ -34,10 +34,13 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-Z katalogu projektu uruchom:
+Aby keycloack działał poprawnie znajdź na swoim komputerze lokalizacje: ```C:\Windows\System32\drivers\etc```
 
+Dodaj:
+```127.0.0.1  localhost keycloak.local```
+
+Z katalogu projektu uruchom:
 ```bash
-echo "\n127.0.0.1  localhost keycloak.local" >> /etc/hosts
 docker compose up --build
 ```
 
