@@ -17,7 +17,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
-                                "/index.html",
+                                "/home",
+                                "/applications",
+                                "/submit",
+                                "/about-us",
+                                "/login",
+                                "/register",
+                                "/employee/**",
+                                "/api/**",
+                                // static assets (css/js/images)
+                                "/*.css",
+                                "/*.js",
+                                "/favicon.ico",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"

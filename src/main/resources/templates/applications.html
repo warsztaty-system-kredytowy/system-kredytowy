@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/common :: head('My Applications - Loan Application')}"></head>
+
+<body>
+    <style>
+        main { margin-top: 80px; margin-bottom: 80px; }
+        .container { max-width: 1000px; margin: 40px auto 40px auto; padding: 0 20px 150px 20px; }
+        h1 { color: #1e3a8a; margin-bottom: 30px; }
+        .applications-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        @media (max-width: 900px) { .applications-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .applications-grid { grid-template-columns: 1fr; } }
+        .application-card { background: white; border: 2px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+        .application-card:hover { box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); border-color: #1e3a8a; transform: translateY(-2px); }
+        .app-id { color: #1e3a8a; font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }
+        .app-amount { font-size: 1.1rem; margin: 10px 0; }
+        .app-status { display: inline-block; padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; margin: 10px 0; }
+        .status-created { background: #e0e0e0; color: #333; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-accepted { background: #d1e7dd; color: #0f5132; }
+        .status-denied { background: #f8d7da; color: #842029; }
+        .status-appeal { background: #cfe2ff; color: #084298; }
+        .app-date { color: #999; font-size: 0.9rem; margin-top: 10px; }
+        .app-purpose { color: #666; margin-top: 10px; font-size: 0.95rem; }
+        .view-btn { display: inline-block; background-color: #1e3a8a; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin-top: 12px; transition: all 0.3s; }
+        .view-btn:hover { background-color: #1e3a8a; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3); }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state h2 { color: #666; }
+        .empty-state a { display: inline-block; background-color: #1e3a8a; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; margin-top: 20px; transition: all 0.3s; }
+        .empty-state a:hover { background-color: #1e3a8a; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; padding: 30px; }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; transition: color 0.2s; }
+        .modal-close:hover { color: #1e3a8a; }
+        .timeline { margin-top: 20px; border-left: 2px solid #1e3a8a; padding-left: 15px; }
+        .timeline-item { margin-bottom: 15px; position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: -22px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #1e3a8a; }
+        .timeline-date { font-size: 0.85rem; color: #999; }
+        .timeline-status { font-weight: 600; color: #333; }
+        .timeline-note { font-size: 0.9rem; color: #555; margin-top: 5px; }
+        .appeal-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+        .appeal-textarea { width: 100%; padding: 10px; border: 2px solid #1e3a8a; border-radius: 6px; margin-bottom: 10px; resize: vertical; font-family: 'Roboto', sans-serif; box-sizing: border-box; }
+    </style>
+
+    <div th:replace="~{fragments/common :: navbar}"></div>
+
+    <main class="content">
+        <div class="container">
+            <div class="credit-container">
+                <h1>My Loan Applications</h1>
+
+                <!-- Empty state (rendered server-side when there are no applications) -->
+                <div th:if="${#lists.isEmpty(applications)}" class="empty-state">
+                    <h2>No applications yet</h2>
+                    <p>You haven't submitted any loan applications yet.</p>
+                    <a th:href="@{/submit}" href="/submit">Create Your First Application</a>
+                </div>
+
+                <!-- Applications rendered server-side -->
+                <div th:unless="${#lists.isEmpty(applications)}" class="applications-grid">
+                    <div th:each="app : ${applications}" class="application-card"
+                         th:with="statusClass=${app.status.name() == 'NEW' ? 'created' : (app.status.name() == 'IN_PROCESSING' ? 'pending' : (app.status.name() == 'APPROVED' ? 'accepted' : (app.status.name() == 'DENIED' ? 'denied' : 'appeal')))}">
+                        <div class="app-id">Application #<span th:text="${app.id}">0</span></div>
+                        <div class="app-amount">Amount: <span th:text="${app.loanAmount}">0</span> PLN</div>
+                        <div class="app-amount">Term: <span th:text="${app.loanTermYears}">0</span> year(s)</div>
+                        <div class="app-status" th:classappend="${'status-' + statusClass}"
+                             th:text="${#strings.replace(app.status, '_', ' ')}">STATUS</div>
+                        <div class="app-purpose" th:text="${app.loanPurpose}">Purpose</div>
+                        <div class="app-date"
+                             th:text="${app.submittedAt != null ? #temporals.format(app.submittedAt, 'dd.MM.yyyy') : '—'}">date</div>
+                        <a href="#" class="view-btn" th:onclick="|viewDetails(${app.id}); return false;|">View Details</a>
+
+                        <!-- Hidden, server-rendered detail block consumed by the modal -->
+                        <template th:id="'detail-' + ${app.id}">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95rem; color: #444;">
+                                <div><strong>Amount:</strong> <span th:text="${app.loanAmount}">0</span> PLN</div>
+                                <div><strong>Term:</strong> <span th:text="${app.loanTermYears}">0</span> years</div>
+                                <div><strong>Income:</strong> <span th:text="${app.monthlyIncome}">0</span> PLN</div>
+                                <div><strong>Liabilities:</strong> <span th:text="${app.monthlyLiabilities}">0</span> PLN</div>
+                                <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> <span th:text="${app.loanPurpose}">N/A</span></div>
+                                <div style="grid-column: 1 / -1;"><strong>Status:</strong>
+                                    <span th:classappend="${'status-' + statusClass}" style="padding: 2px 6px; border-radius: 4px;"
+                                          th:text="${#strings.replace(app.status, '_', ' ')}">STATUS</span>
+                                </div>
+                            </div>
+                            <h3 style="color: #1e3a8a; margin-top: 25px; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px;">Timeline</h3>
+                            <div class="timeline">
+                                <div th:if="${#lists.isEmpty(app.statusHistory)}">
+                                    <p style="color: #666; font-size: 0.9rem; margin-top: 0;">No history available.</p>
+                                </div>
+                                <div th:each="h : ${app.statusHistory}" class="timeline-item">
+                                    <div class="timeline-date"
+                                         th:text="${h.timestamp != null ? #temporals.format(h.timestamp, 'dd.MM.yyyy HH:mm') : ''}">date</div>
+                                    <div class="timeline-status" th:text="${#strings.replace(h.status, '_', ' ')}">STATUS</div>
+                                    <div class="timeline-note" th:text="${h.note}">note</div>
+                                </div>
+                            </div>
+                            <div th:if="${app.status.name() == 'DENIED' and !app.finalDecision}" class="appeal-section">
+                                <h2 style="color: #1e3a8a; margin-top: 0;">Appeal Decision</h2>
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">If you believe this decision was made in error, you can submit an appeal once.</p>
+                                <textarea class="appeal-textarea appeal-reason" rows="3" placeholder="Explain why you are appealing this decision..."></textarea>
+                                <button class="view-btn" th:onclick="|submitAppeal(${app.id})|" style="margin-top: 0;">Submit Appeal</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="detailsModal" class="modal-overlay">
+        <div class="modal-content credit-container">
+            <button class="modal-close" onclick="closeModal()">
+                <span class="material-icons">close</span>
+            </button>
+            <h2 style="color: #1e3a8a; margin-top: 0;">Application Details</h2>
+            <div id="modalBody" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/common :: footer}"></footer>
+
+    <script>
+        function viewDetails(appId) {
+            const tpl = document.getElementById('detail-' + appId);
+            if (!tpl) return;
+            document.getElementById('modalBody').innerHTML = tpl.innerHTML;
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        async function submitAppeal(appId) {
+            const modalBody = document.getElementById('modalBody');
+            const textarea = modalBody.querySelector('.appeal-reason');
+            const reason = textarea ? textarea.value.trim() : '';
+            if (!reason) {
+                alert('Please provide a reason for your appeal.');
+                return;
+            }
+            try {
+                const response = await fetch('/api/loans/' + appId + '/appeal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason })
+                });
+                if (response.ok) {
+                    alert('Appeal submitted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Failed to submit appeal. Please try again.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while submitting your appeal.');
+            }
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+
+</html>
