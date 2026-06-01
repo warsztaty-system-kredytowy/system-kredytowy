@@ -28,7 +28,7 @@ public class HomeController {
 
     @GetMapping("/applications")
     public String applications(Model model) {
-        model.addAttribute("applications", service.findAll());
+        model.addAttribute("applications", service.findAllForCurrentUser());
         return "applications";
     }
 
@@ -44,17 +44,17 @@ public class HomeController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "redirect:/oauth2/authorization/keycloak";
     }
 
     @GetMapping("/register")
     public String register() {
-        return "register";
+        return "redirect:/oauth2/authorization/keycloak";
     }
 
     @GetMapping("/employee/login")
     public String employeeLogin() {
-        return "employee-login";
+        return "redirect:/oauth2/authorization/keycloak";
     }
 
     @GetMapping("/employee/dashboard")
@@ -83,6 +83,10 @@ public class HomeController {
 
     @GetMapping("/employee/review/{id}")
     public String employeeReview(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        if (service.isCurrentUserOwnerOf(id)) {
+            redirectAttributes.addFlashAttribute("error", "You cannot review your own credit application!");
+            return "redirect:/employee/dashboard";
+        }
         service.startReview(id);
         return service.findById(id)
                 .map(app -> {

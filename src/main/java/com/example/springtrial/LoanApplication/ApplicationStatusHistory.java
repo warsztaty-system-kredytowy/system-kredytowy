@@ -28,4 +28,6 @@ public class ApplicationStatusHistory {
 
     @Column(length = 2000)
     private String note;
+
+    private String evaluatedBy;
 }

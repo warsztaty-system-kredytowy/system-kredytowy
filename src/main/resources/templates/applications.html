@@ -94,6 +94,10 @@
                                          th:text="${h.timestamp != null ? #temporals.format(h.timestamp, 'dd.MM.yyyy HH:mm') : ''}">date</div>
                                     <div class="timeline-status" th:text="${#strings.replace(h.status, '_', ' ')}">STATUS</div>
                                     <div class="timeline-note" th:text="${h.note}">note</div>
+                                    <div th:if="${h.evaluatedBy != null}" class="timeline-note" style="font-weight: 500; font-size: 0.85rem; color: #1e3a8a; margin-top: 2px;">
+                                        <span class="material-icons" style="font-size: 0.9rem; vertical-align: middle; margin-right: 4px;">person</span>
+                                        <span>Consultant: </span><span th:text="${h.evaluatedBy}">Anna Kowalska</span>
+                                    </div>
                                 </div>
                             </div>
                             <div th:if="${app.status.name() == 'DENIED' and !app.finalDecision}" class="appeal-section">

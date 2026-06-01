@@ -88,6 +88,15 @@
         "clientRole": false,
         "containerId": "fc8a5515-10d4-4a6f-b260-f67d67d6b0ce",
         "attributes": {}
+      },
+      {
+        "id": "2bc9a96e-bc3d-4c38-8c11-9a73e659b83b",
+        "name": "employee",
+        "description": "Employee/Consultant role",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "fc8a5515-10d4-4a6f-b260-f67d67d6b0ce",
+        "attributes": {}
       }
     ],
     "client": {
@@ -503,6 +512,51 @@
           "uma_protection"
         ]
       },
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "7ac19d85-f5e9-4e78-9e5b-43924f0c4391",
+      "username": "employee",
+      "email": "employee@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Anna",
+      "lastName": "Kowalska",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-system-kredytowy-app",
+        "employee"
+      ],
+      "clientRoles": {},
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "7ac19d85-f5e9-4e78-9e5b-43924f0c4392",
+      "username": "user",
+      "email": "user@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Jan",
+      "lastName": "Nowak",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-system-kredytowy-app"
+      ],
+      "clientRoles": {},
       "notBefore": 0,
       "groups": []
     }

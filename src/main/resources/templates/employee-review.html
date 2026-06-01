@@ -14,8 +14,9 @@
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; }
         .header-logo .material-icons { font-size: 1.8rem; }
-        .employee-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-weight: 700; }
-        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; text-decoration: none; margin-left: 15px; }
+        .employee-info { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .employee-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; text-decoration: none; flex-shrink: 0; white-space: nowrap; }
         .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
         .back-link { display: inline-flex; align-items: center; gap: 6px; color: #1e3a8a; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
@@ -66,19 +67,40 @@
 <body th:with="statusClass=${app.status.name() == 'NEW' ? 'created' : (app.status.name() == 'IN_PROCESSING' ? 'pending' : (app.status.name() == 'APPROVED' ? 'accepted' : (app.status.name() == 'DENIED' ? 'denied' : 'appeal')))}">
 
 <div class="header">
-    <div class="header-content">
+    <div class="header-content" style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 20px;">
         <div class="header-logo">
             <span class="material-icons">admin_panel_settings</span>
             <span>Application Review</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="employee-avatar">
-                <span class="material-icons">person</span>
+        <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+            <a th:href="@{/home}" href="/home" class="logout-btn">
+                <span class="material-icons">home</span>
+                <span>Home</span>
+            </a>
+            <a th:href="@{/applications}" href="/applications" class="logout-btn">
+                <span class="material-icons">folder</span>
+                <span>My Applications</span>
+            </a>
+            <a th:href="@{/submit}" href="/submit" class="logout-btn">
+                <span class="material-icons">edit</span>
+                <span>Submit Application</span>
+            </a>
+            <a th:href="@{/about-us}" href="/about-us" class="logout-btn">
+                <span class="material-icons">info</span>
+                <span>About Us</span>
+            </a>
+
+            <div style="border-left: 1px solid rgba(255,255,255,0.3); height: 30px; margin: 0 10px;"></div>
+
+            <div class="employee-info" style="display: flex; align-items: center; gap: 10px;">
+                <div class="employee-avatar">
+                    <span class="material-icons">person</span>
+                </div>
+                <span id="employeeNameDisplay" th:text="${username}" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">Employee</span>
             </div>
-            <span id="employeeNameDisplay" style="font-weight: 500;"></span>
-            <a href="#" class="logout-btn" onclick="logout(); return false;">
+            <a th:href="@{/logout}" href="/logout" class="logout-btn">
                 <span class="material-icons">logout</span>
-                <span>Logout</span>
+                <span>Sign Out</span>
             </a>
         </div>
     </div>
@@ -139,6 +161,10 @@
                         <div class="info-label">Application Date</div>
                         <div class="info-value"
                              th:text="${app.submittedAt != null ? #temporals.format(app.submittedAt, 'dd.MM.yyyy') : '—'}">date</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Applicant (Owner)</div>
+                        <div class="info-value" th:text="${app.owner}">N/A</div>
                     </div>
                 </div>
             </div>
@@ -245,20 +271,12 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const employeeName = localStorage.getItem('employeeName');
-        if (employeeName) {
-            document.getElementById('employeeNameDisplay').textContent = employeeName;
-        }
-    });
-
     async function approveApplication(appId) {
         if (!confirm('Are you sure you want to approve this application?')) return;
         try {
-            const token = localStorage.getItem('employeeToken');
             const response = await fetch(`/api/loans/${appId}/approve`, {
                 method: 'PUT',
-                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'ACCEPTED' })
             });
             if (response.ok) {
@@ -277,10 +295,9 @@
         const reason = prompt('Enter reason for denial:');
         if (!reason) return;
         try {
-            const token = localStorage.getItem('employeeToken');
             const response = await fetch(`/api/loans/${appId}/deny`, {
                 method: 'PUT',
-                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'DENIED', reason: reason })
             });
             if (response.ok) {
@@ -301,10 +318,8 @@
         btn.innerHTML = '<span class="material-icons" style="animation: spin 2s linear infinite;">autorenew</span> Generating...';
         btn.disabled = true;
         try {
-            const token = localStorage.getItem('employeeToken');
             const response = await fetch(`/api/loans/${appId}/evaluate`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + token }
+                method: 'POST'
             });
             if (response.ok) {
                 window.location.reload();
@@ -319,12 +334,6 @@
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
-    }
-
-    function logout() {
-        localStorage.removeItem('employeeToken');
-        localStorage.removeItem('employeeName');
-        window.location.href = '/employee/login';
     }
 </script>
 

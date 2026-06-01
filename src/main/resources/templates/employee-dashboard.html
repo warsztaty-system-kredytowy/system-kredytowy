@@ -15,9 +15,9 @@
         .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; }
         .header-logo .material-icons { font-size: 1.8rem; }
         .header-right { display: flex; align-items: center; gap: 20px; }
-        .employee-info { display: flex; align-items: center; gap: 10px; }
-        .employee-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-weight: 700; }
-        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; text-decoration: none; }
+        .employee-info { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .employee-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; text-decoration: none; flex-shrink: 0; white-space: nowrap; }
         .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
         .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
         h1 { color: #1e3a8a; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
@@ -83,15 +83,34 @@
             <span>Credit Approval Dashboard</span>
         </div>
         <div class="header-right">
+            <a th:href="@{/home}" href="/home" class="logout-btn">
+                <span class="material-icons">home</span>
+                <span>Home</span>
+            </a>
+            <a th:href="@{/applications}" href="/applications" class="logout-btn">
+                <span class="material-icons">folder</span>
+                <span>My Applications</span>
+            </a>
+            <a th:href="@{/submit}" href="/submit" class="logout-btn">
+                <span class="material-icons">edit</span>
+                <span>Submit Application</span>
+            </a>
+            <a th:href="@{/about-us}" href="/about-us" class="logout-btn">
+                <span class="material-icons">info</span>
+                <span>About Us</span>
+            </a>
+
+            <div style="border-left: 1px solid rgba(255,255,255,0.3); height: 30px; margin: 0 10px;"></div>
+
             <div class="employee-info">
                 <div class="employee-avatar">
                     <span class="material-icons">person</span>
                 </div>
-                <span id="employeeName">Employee</span>
+                <span id="employeeName" th:text="${username}" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">Employee</span>
             </div>
-            <a href="#" class="logout-btn" onclick="logout(); return false;">
+            <a th:href="@{/logout}" href="/logout" class="logout-btn">
                 <span class="material-icons">logout</span>
-                <span>Logout</span>
+                <span>Sign Out</span>
             </a>
         </div>
     </div>
@@ -185,10 +204,14 @@
                         <span class="material-icons">auto_awesome</span>
                         <span>AI Score: <span th:text="${app.llmScore != null ? app.llmScore : 'N/A'}">N/A</span>/10</span>
                     </div>
+                    <div class="app-detail-item" style="color: #666; font-size: 0.9rem; grid-column: 1 / -1; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-icons" style="font-size: 1.1rem; color: #666;">person</span>
+                        <span>Applicant: <span th:text="${app.owner}">N/A</span></span>
+                    </div>
                 </div>
             </div>
             <div class="app-actions">
-                <th:block th:if="${app.status.name() != 'APPROVED' and app.status.name() != 'DENIED'}">
+                <th:block th:if="${app.status.name() != 'APPROVED' and app.status.name() != 'DENIED' and app.owner != currentUserOwnerKey}">
                     <button class="action-btn btn-approve" th:onclick="|approveApplication(${app.id})|">
                         <span class="material-icons">check_circle</span>
                         Approve
@@ -215,6 +238,7 @@
                     <div><strong>Term:</strong> <span th:text="${app.loanTermYears}">0</span> years</div>
                     <div><strong>Income:</strong> <span th:text="${app.monthlyIncome}">0</span> PLN</div>
                     <div><strong>Liabilities:</strong> <span th:text="${app.monthlyLiabilities}">0</span> PLN</div>
+                    <div style="grid-column: 1 / -1;"><strong>Applicant:</strong> <span th:text="${app.owner}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> <span th:text="${app.loanPurpose}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Status:</strong>
                         <span th:classappend="${'status-' + statusClass}" style="padding: 2px 6px; border-radius: 4px;"
@@ -256,15 +280,6 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let employeeName = localStorage.getItem('employeeName');
-        if (!employeeName) {
-            employeeName = 'Test Employee';
-            localStorage.setItem('employeeName', employeeName);
-        }
-        document.getElementById('employeeName').textContent = employeeName;
-    });
-
     function filterApplications(status, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -283,10 +298,9 @@
     async function approveApplication(appId) {
         if (!confirm('Are you sure you want to approve this application?')) return;
         try {
-            const token = localStorage.getItem('employeeToken');
             const response = await fetch(`/api/loans/${appId}/approve`, {
                 method: 'PUT',
-                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'ACCEPTED' })
             });
             if (response.ok) {
@@ -305,10 +319,9 @@
         const reason = prompt('Enter reason for denial:');
         if (!reason) return;
         try {
-            const token = localStorage.getItem('employeeToken');
             const response = await fetch(`/api/loans/${appId}/deny`, {
                 method: 'PUT',
-                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'DENIED', reason: reason })
             });
             if (response.ok) {
@@ -339,12 +352,6 @@
         if (event.target == modal) {
             closeModal();
         }
-    }
-
-    function logout() {
-        localStorage.removeItem('employeeToken');
-        localStorage.removeItem('employeeName');
-        window.location.href = '/employee/login';
     }
 </script>
 
