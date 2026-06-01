@@ -34,10 +34,13 @@ Z katalogu projektu:
 ### Przez Dockera
 Nie musisz mieć lokalnie JDK/Gradle. Projekt zawiera wieloetapowy `Dockerfile`, który sam zbuduje JAR wewnątrz kontenera.
 
-Z katalogu projektu uruchom:
+Aby keycloack działał poprawnie znajdź na swoim komputerze lokalizacje: ```C:\Windows\System32\drivers\etc```
 
+Dodaj:
+```127.0.0.1  localhost keycloak.local```
+
+Z katalogu projektu uruchom:
 ```bash
-echo "\n127.0.0.1  localhost keycloak.local" >> /etc/hosts
 docker compose up --build
 ```
 
@@ -56,3 +59,26 @@ Po starcie aplikacja jest dostępna na: **http://localhost:8080**
 ```bash
 .\gradlew.bat test
 ```
+
+## Integracja z Keycloak i Bezpieczeństwo
+
+Aplikacja integruje się z **Keycloak OIDC** w celu uwierzytelniania i autoryzacji użytkowników za pomocą standardowego przepływu OAuth 2.0. Wspierany jest podział na role użytkowników standardowych oraz pracowników (konsultantów kredytowych).
+
+### Mapowanie Rol i Automatyczna Promocja Pracowników
+Dostęp do zasobów zabezpieczony jest mechanizmem RBAC (Role-Based Access Control):
+- **Zwykły użytkownik (`ROLE_USER`):** Może przeglądać swoje wnioski kredytowe, składać nowe i składać odwołania.
+- **Pracownik / Konsultant (`ROLE_EMPLOYEE`):** Ma dostęp do panelu ocen (`/employee/**`, `/api/loans/*/approve`, etc.), może akceptować/odrzucać wnioski oraz generować oceny AI.
+
+#### Automatyczne Promowanie na Pracownika (Indirect Promotion)
+Aplikacja posiada elastyczny mechanizm automatycznego przyznawania uprawnień pracowniczych bez konieczności ręcznego przypisywania ról w Keycloaku:
+1. **Domena e-mail:** Każdy użytkownik, którego adres e-mail kończy się na `@company.com` lub `@employee.loan.com`, automatycznie otrzymuje uprawnienia pracownika.
+2. **Nazwa użytkownika:** Każdy użytkownik, którego login rozpoczyna się od prefiksu `employee_` (np. `employee_jan`) lub jest dokładnie równy `employee`, automatycznie otrzymuje rolę `ROLE_EMPLOYEE`.
+
+### Konta testowe
+W konfiguracji Keycloaka (`realm-export.json`) zdefiniowane są dwa gotowe konta testowe do szybkiego sprawdzenia działania:
+- **Konto Konsultanta (Pracownik):**
+  - **Login:** `employee`
+  - **Hasło:** `password`
+- **Konto Standardowego Użytkownika:**
+  - **Login:** `user`
+  - **Hasło:** `password`

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Loan Application</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%231e3a8a%22 d=%22M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-8.5-9L2 6v2h19V6l-9.5-5z%22/></svg>">
+    <link rel="stylesheet" type="text/css" th:href="@{/stylE.css}" href="/stylE.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/navbar.css}" href="/navbar.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/scrollbar.css}" href="/scrollbar.css">
+</head>
+
+<body>
+
+    <!-- Public site navigation. Usage: <div th:replace="~{fragments/common :: navbar}"></div> -->
+    <div th:fragment="navbar" class="mainnav"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); background: white;">
+        <style>
+            .logout-nav-btn:hover {
+                background-color: #991b1b !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            .employee-nav-btn {
+                background-color: #2563eb !important;
+            }
+
+            .employee-nav-btn:hover {
+                background-color: #3b82f6 !important;
+                /* lighter blue hover */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            .navbar-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 2px;
+            }
+
+            .navbar-avatar.user-avatar {
+                background-color: #1e3a8a;
+            }
+
+            .navbar-avatar.employee-avatar {
+                background-color: #2563eb;
+            }
+
+            .navbar-avatar.anonymous-avatar {
+                background-color: #9ca3af;
+            }
+
+            .navbar-avatar .material-icons {
+                font-size: 1.2rem;
+                color: white !important;
+            }
+        </style>
+
+        <div class="navbar-logo">
+            <span class="material-icons">account_balance</span>
+            <span class="logo-text">Loan Application</span>
+        </div>
+
+        <div class="navbar-links" style="display: flex; align-items: center; gap: 20px;">
+            <a th:href="@{/home}" href="/home" class="navbar-item">
+                <span class="material-icons">home</span>
+                <span>Home</span>
+            </a>
+
+            <a th:href="@{/applications}" href="/applications" class="navbar-item">
+                <span class="material-icons">folder</span>
+                <span>My Applications</span>
+            </a>
+
+            <a th:href="@{/submit}" href="/submit" class="navbar-item">
+                <span class="material-icons">edit</span>
+                <span>Submit Application</span>
+            </a>
+
+            <a th:href="@{/about-us}" href="/about-us" class="navbar-item">
+                <span class="material-icons">info</span>
+                <span>About Us</span>
+            </a>
+
+            <a th:if="${isEmployee}" th:href="@{/employee/dashboard}" href="/employee/dashboard"
+                class="navbar-item employee-nav-btn">
+                <span class="material-icons">dashboard</span>
+                <span>Employee Dashboard</span>
+            </a>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div th:if="${!isAuthenticated}"
+                style="color: #666; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; font-family: 'Roboto', sans-serif;">
+                <div class="navbar-avatar anonymous-avatar">
+                    <span class="material-icons">person</span>
+                </div>
+                <span>Anonim</span>
+            </div>
+
+            <div th:if="${isAuthenticated}"
+                style="color: #333; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; font-family: 'Roboto', sans-serif;">
+                <div th:class="${isEmployee} ? 'navbar-avatar employee-avatar' : 'navbar-avatar user-avatar'">
+                    <span class="material-icons">person</span>
+                </div>
+                <span th:text="${username}" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle;">User</span>
+            </div>
+
+            <a th:if="${!isAuthenticated}" th:href="@{/login}" href="/login" class="navbar-item"
+                style="color: white !important; padding: 10px 20px; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: inline-flex; align-items: center; gap: 5px; text-decoration: none;">
+                <span class="material-icons">login</span>
+                <span>Sign In</span>
+            </a>
+
+            <a th:if="${isAuthenticated}" th:href="@{/logout}" href="/logout" class="navbar-item logout-nav-btn"
+                style="background-color: #dc2626; color: white !important; padding: 10px 20px; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: inline-flex; align-items: center; gap: 5px; text-decoration: none;">
+                <span class="material-icons">logout</span>
+                <span>Sign Out</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Shared footer. Usage: <footer th:replace="~{fragments/common :: footer}"></footer> -->
+    <footer th:fragment="footer"
+        style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1e3a8a; color: rgba(255, 255, 255, 0.9); text-align: center; padding: 15px; font-size: 0.9rem; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; font-family: 'Roboto', sans-serif;">
+        <div style="margin-left: 20px; font-weight: 500;">
+            Loan Application System
+        </div>
+        <div>
+            © 2026 All Rights Reserved |
+            Photo by <a href="https://unsplash.com/photos/a-person-stacking-coins-on-top-of-a-table-jpqyfK7GB4w"
+                style="color: #fff; text-decoration: underline;">Towfiqu barbhuiya</a> on Unsplash
+        </div>
+        <div style="margin-right: 20px;">
+            <a th:href="@{/about-us}" href="/about-us"
+                style="color: #fff; text-decoration: none; margin-left: 15px;">About Us</a>
+        </div>
+    </footer>
+
+</body>
+
+</html>

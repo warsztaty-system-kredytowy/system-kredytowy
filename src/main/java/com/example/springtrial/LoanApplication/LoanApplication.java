@@ -45,6 +45,8 @@ public class LoanApplication {
 
     private boolean isFinalDecision = false;
 
+    private String owner;
+
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     @OrderBy("timestamp DESC")
