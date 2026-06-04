@@ -238,7 +238,7 @@
                     <div><strong>Term:</strong> <span th:text="${app.loanTermYears}">0</span> years</div>
                     <div><strong>Income:</strong> <span th:text="${app.monthlyIncome}">0</span> PLN</div>
                     <div><strong>Liabilities:</strong> <span th:text="${app.monthlyLiabilities}">0</span> PLN</div>
-                    <div style="grid-column: 1 / -1;"><strong>Applicant:</strong> <span th:text="${app.owner}">N/A</span></div>
+                    <div style="grid-column: 1 / -1; word-break: break-all; overflow-wrap: break-word;"><strong>Applicant:</strong> <span th:text="${app.owner}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> <span th:text="${app.loanPurpose}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Status:</strong>
                         <span th:classappend="${'status-' + statusClass}" style="padding: 2px 6px; border-radius: 4px;"

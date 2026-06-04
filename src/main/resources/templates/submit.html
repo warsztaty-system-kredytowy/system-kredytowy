@@ -71,11 +71,11 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="loanAmount">Loan Amount (PLN)</label>
-                            <input type="number" id="loanAmount" step="0.01" min="0" placeholder="e.g. 25000" required>
+                            <input type="number" id="loanAmount" step="0.01" min="1" max="10000000" placeholder="e.g. 25000" required>
                         </div>
                         <div class="form-group">
                             <label for="loanTermYears">Loan Term (years)</label>
-                            <input type="number" id="loanTermYears" min="1" placeholder="e.g. 5" required>
+                            <input type="number" id="loanTermYears" min="1" max="100" placeholder="e.g. 5" required>
                         </div>
                         <div class="form-group full-width">
                             <label for="loanPurpose">Loan Purpose</label>
@@ -92,11 +92,11 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="monthlyIncome">Monthly Income (PLN)</label>
-                            <input type="number" id="monthlyIncome" step="0.01" placeholder="e.g. 6000" required>
+                            <input type="number" id="monthlyIncome" step="0.01" min="0" max="10000000" placeholder="e.g. 6000" required>
                         </div>
                         <div class="form-group">
                             <label for="monthlyLiabilities">Monthly Liabilities (PLN)</label>
-                            <input type="number" id="monthlyLiabilities" step="0.01" placeholder="e.g. 500" required>
+                            <input type="number" id="monthlyLiabilities" step="0.01" min="0" max="10000000" placeholder="e.g. 500" required>
                         </div>
                     </div>
                 </div>
@@ -144,6 +144,14 @@
             const div = document.createElement('div');
             div.className = 'credit-entry';
             div.id = 'entry-' + entryCount;
+
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const minDateStr = `${yyyy}-${mm}-${dd}`;
+            const maxDateStr = `${yyyy + 100}-${mm}-${dd}`;
+
             div.innerHTML = `
             <div class="credit-entry-header">
                 <span class="credit-entry-title">
@@ -158,19 +166,19 @@
             <div class="credit-entry-grid">
                 <div class="form-group">
                     <label>Amount Loaned (PLN)</label>
-                    <input type="number" step="0.01" class="amountLoaned" placeholder="e.g. 10000">
+                    <input type="number" step="0.01" class="amountLoaned" placeholder="e.g. 10000" min="1" max="10000000" required>
                 </div>
                 <div class="form-group">
                     <label>Amount Still To Pay (PLN)</label>
-                    <input type="number" step="0.01" class="amountStillToPay" placeholder="e.g. 5000">
+                    <input type="number" step="0.01" class="amountStillToPay" placeholder="e.g. 5000" min="0" max="10000000" required>
                 </div>
                 <div class="form-group">
                     <label>Date Till Full Repayment</label>
-                    <input type="date" class="dateTillFullRepayment">
+                    <input type="date" class="dateTillFullRepayment" min="${minDateStr}" max="${maxDateStr}" required>
                 </div>
                 <div class="form-group">
                     <label>Monthly Cost (PLN)</label>
-                    <input type="number" step="0.01" class="monthlyCost" placeholder="e.g. 300">
+                    <input type="number" step="0.01" class="monthlyCost" placeholder="e.g. 300" min="0" max="1000000" required>
                 </div>
             </div>
         `;
@@ -181,32 +189,132 @@
             document.getElementById('entry-' + id).remove();
         }
 
+        function formatCurrency(val) {
+            if (val === undefined || val === null || val === '—') return '—';
+            const num = Number(val);
+            if (isNaN(num)) return val;
+            return Number(num.toFixed(2)).toString();
+        }
+
         document.getElementById('loanForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            const resultEl = document.getElementById('submitResult');
+            const summaryEl = document.getElementById('applicationSummary');
+
+            function showError(msg) {
+                resultEl.innerHTML = `<span class="msg-error">${msg}</span>`;
+                summaryEl.innerHTML = '';
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            const loanAmountVal = document.getElementById('loanAmount').value;
+            const loanTermYearsVal = document.getElementById('loanTermYears').value;
+            const loanPurposeVal = document.getElementById('loanPurpose').value.trim();
+            const monthlyIncomeVal = document.getElementById('monthlyIncome').value;
+            const monthlyLiabilitiesVal = document.getElementById('monthlyLiabilities').value;
+
+            if (!loanAmountVal || !loanTermYearsVal || !loanPurposeVal || !monthlyIncomeVal || !monthlyLiabilitiesVal) {
+                showError("Please fill in all required fields.");
+                return;
+            }
+
+            const loanAmount = parseFloat(loanAmountVal);
+            const loanTerm = parseInt(loanTermYearsVal);
+            const monthlyIncome = parseFloat(monthlyIncomeVal);
+            const monthlyLiabilities = parseFloat(monthlyLiabilitiesVal);
+
+            if (isNaN(loanAmount) || loanAmount < 1 || loanAmount > 10000000) {
+                showError("Loan Amount must be between 1 and 10,000,000 PLN.");
+                return;
+            }
+            if (isNaN(loanTerm) || loanTerm < 1 || loanTerm > 100) {
+                showError("Loan Term must be between 1 and 100 years.");
+                return;
+            }
+            if (loanPurposeVal === "") {
+                showError("Loan Purpose is required.");
+                return;
+            }
+            if (isNaN(monthlyIncome) || monthlyIncome < 0 || monthlyIncome > 10000000) {
+                showError("Monthly Income must be between 0 and 10,000,000 PLN.");
+                return;
+            }
+            if (isNaN(monthlyLiabilities) || monthlyLiabilities < 0 || monthlyLiabilities > 10000000) {
+                showError("Monthly Liabilities must be between 0 and 10,000,000 PLN.");
+                return;
+            }
+
             const entries = document.querySelectorAll('.credit-entry');
-            const creditHistory = Array.from(entries).map(entry => ({
-                amountLoaned: entry.querySelector('.amountLoaned').value,
-                amountStillToPay: entry.querySelector('.amountStillToPay').value,
-                dateTillFullRepayment: entry.querySelector('.dateTillFullRepayment').value,
-                monthlyCost: entry.querySelector('.monthlyCost').value
-            }));
+            const creditHistory = [];
+            const todayDate = new Date();
+            todayDate.setHours(0,0,0,0);
+            const maxFutureDate = new Date();
+            maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 100);
+
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                const amountLoanedVal = entry.querySelector('.amountLoaned').value;
+                const amountStillToPayVal = entry.querySelector('.amountStillToPay').value;
+                const dateTillFullRepaymentVal = entry.querySelector('.dateTillFullRepayment').value;
+                const monthlyCostVal = entry.querySelector('.monthlyCost').value;
+
+                if (!amountLoanedVal || !amountStillToPayVal || !dateTillFullRepaymentVal || !monthlyCostVal) {
+                    showError(`Please fill all fields for Credit Entry #${i + 1}.`);
+                    return;
+                }
+
+                const amountLoaned = parseFloat(amountLoanedVal);
+                const amountStillToPay = parseFloat(amountStillToPayVal);
+                const monthlyCost = parseFloat(monthlyCostVal);
+
+                if (isNaN(amountLoaned) || amountLoaned < 1 || amountLoaned > 10000000) {
+                    showError(`Amount Loaned for Credit Entry #${i + 1} must be between 1 and 10,000,000 PLN.`);
+                    return;
+                }
+                if (isNaN(amountStillToPay) || amountStillToPay < 0 || amountStillToPay > 10000000) {
+                    showError(`Amount Still To Pay for Credit Entry #${i + 1} must be between 0 and 10,000,000 PLN.`);
+                    return;
+                }
+                if (isNaN(monthlyCost) || monthlyCost < 0 || monthlyCost > 1000000) {
+                    showError(`Monthly Cost for Credit Entry #${i + 1} must be between 0 and 1,000,000 PLN.`);
+                    return;
+                }
+
+                const repDate = new Date(dateTillFullRepaymentVal);
+                if (isNaN(repDate.getTime())) {
+                    showError(`Please provide a valid date for Credit Entry #${i + 1}.`);
+                    return;
+                }
+                if (repDate < todayDate) {
+                    showError(`Date Till Full Repayment for Credit Entry #${i + 1} cannot be in the past.`);
+                    return;
+                }
+                if (repDate > maxFutureDate) {
+                    showError(`Date Till Full Repayment for Credit Entry #${i + 1} must be within 100 years.`);
+                    return;
+                }
+
+                creditHistory.push({
+                    amountLoaned: amountLoanedVal,
+                    amountStillToPay: amountStillToPayVal,
+                    dateTillFullRepayment: dateTillFullRepaymentVal,
+                    monthlyCost: monthlyCostVal
+                });
+            }
 
             const response = await fetch('/api/loans', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    monthlyIncome: document.getElementById('monthlyIncome').value,
-                    monthlyLiabilities: document.getElementById('monthlyLiabilities').value,
-                    loanAmount: document.getElementById('loanAmount').value,
-                    loanTermYears: document.getElementById('loanTermYears').value,
-                    loanPurpose: document.getElementById('loanPurpose').value,
+                    monthlyIncome: monthlyIncomeVal,
+                    monthlyLiabilities: monthlyLiabilitiesVal,
+                    loanAmount: loanAmountVal,
+                    loanTermYears: loanTermYearsVal,
+                    loanPurpose: loanPurposeVal,
                     creditHistory: creditHistory
                 })
             });
-
-            const resultEl = document.getElementById('submitResult');
-            const summaryEl = document.getElementById('applicationSummary');
 
             if (response.ok) {
                 const data = await response.json();
@@ -237,10 +345,10 @@
             const creditRows = (data.creditHistory && data.creditHistory.length > 0)
                 ? data.creditHistory.map(e => `
                 <tr>
-                    <td>${e.amountLoaned ?? '—'} PLN</td>
-                    <td>${e.amountStillToPay ?? '—'} PLN</td>
+                    <td>${formatCurrency(e.amountLoaned)} PLN</td>
+                    <td>${formatCurrency(e.amountStillToPay)} PLN</td>
                     <td>${e.dateTillFullRepayment ?? '—'}</td>
-                    <td>${e.monthlyCost ?? '—'} PLN</td>
+                    <td>${formatCurrency(e.monthlyCost)} PLN</td>
                 </tr>`).join('')
                 : '<tr><td colspan="4" style="color:#999; font-style:italic;">No credit history provided.</td></tr>';
 
@@ -252,14 +360,14 @@
             </h2>
             <hr class="divider">
             <div class="summary-field"><strong>Application #${data.id}</strong></div>
-            <div class="summary-field">Loan Amount: <strong>${data.loanAmount ?? '—'} PLN</strong></div>
+            <div class="summary-field">Loan Amount: <strong>${formatCurrency(data.loanAmount)} PLN</strong></div>
             <div class="summary-field">Loan Term: <strong>${data.loanTermYears ?? '—'} year(s)</strong></div>
             <div class="summary-field">
                 Status: <span class="status-badge status-${data.status}">${data.status}</span>
             </div>
             <div class="summary-field">Submitted: ${data.submittedAt ? new Date(data.submittedAt).toLocaleString() : '—'}</div>
-            <div class="summary-field">Monthly Income: ${data.monthlyIncome ?? '—'} PLN</div>
-            <div class="summary-field">Monthly Liabilities: ${data.monthlyLiabilities ?? '—'} PLN</div>
+            <div class="summary-field">Monthly Income: ${formatCurrency(data.monthlyIncome)} PLN</div>
+            <div class="summary-field">Monthly Liabilities: ${formatCurrency(data.monthlyLiabilities)} PLN</div>
             <div class="summary-field">Loan Purpose: ${data.loanPurpose ?? '—'}</div>
 
             <hr class="divider">
