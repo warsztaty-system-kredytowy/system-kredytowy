@@ -19,10 +19,13 @@ public class LoanApplicationService {
 
     private final LoanApplicationRepository repository;
     private final LlmEvaluationService llmEvaluationService;
+    private final LoanScoringService loanScoringService;
 
-    public LoanApplicationService(LoanApplicationRepository repository, LlmEvaluationService llmEvaluationService) {
+    public LoanApplicationService(LoanApplicationRepository repository, LlmEvaluationService llmEvaluationService,
+                                  LoanScoringService loanScoringService) {
         this.repository = repository;
         this.llmEvaluationService = llmEvaluationService;
+        this.loanScoringService = loanScoringService;
     }
 
     private String getCurrentUserOwnerKey() {
@@ -109,6 +112,7 @@ public class LoanApplicationService {
         
         // Assign owner key (session ID or username/email)
         application.setOwner(getCurrentUserOwnerKey());
+        loanScoringService.score(application);
         
         addHistory(application, LoanStatus.NEW, "Application submitted");
 
@@ -133,6 +137,7 @@ public class LoanApplicationService {
 
     public Optional<LoanApplication> startReview(Long id) {
         return repository.findById(id).map(app -> {
+            loanScoringService.score(app);
             if (app.getStatus() == LoanStatus.NEW) {
                 addHistory(app, LoanStatus.IN_PROCESSING, "Review started by employee");
             }
@@ -173,6 +178,7 @@ public class LoanApplicationService {
 
     public Optional<LoanApplication> evaluate(Long id) {
         return repository.findById(id).map(app -> {
+            loanScoringService.score(app);
             llmEvaluationService.evaluateApplication(app);
             return repository.save(app);
         });
