@@ -62,6 +62,10 @@
         .score-medium { color: #856404; }
         .score-low { color: #842029; }
         .ai-explanation { color: #333; line-height: 1.6; font-style: italic; background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 6px; }
+        .score-panel { background: #f7fbf7; border-left: 5px solid #198754; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(25, 135, 84, 0.12); }
+        .score-panel-header { display: flex; align-items: center; gap: 10px; color: #14532d; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .score-reasons { color: #333; line-height: 1.55; background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 6px; white-space: pre-line; flex: 1; }
+        .score-note { margin-top: 12px; color: #666; font-size: 0.9rem; }
     </style>
 </head>
 <body th:with="statusClass=${app.status.name() == 'NEW' ? 'created' : (app.status.name() == 'IN_PROCESSING' ? 'pending' : (app.status.name() == 'APPROVED' ? 'accepted' : (app.status.name() == 'DENIED' ? 'denied' : 'appeal')))}">
@@ -122,6 +126,29 @@
         </div>
 
         <div class="review-content">
+            <div th:if="${app.suggestedScore != null}" class="score-panel">
+                <div class="score-panel-header">
+                    <span class="material-icons">analytics</span>
+                    Rule-Based Suggested Score
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 20px;">
+                    <div class="ai-score"
+                         th:classappend="${app.suggestedScore.doubleValue() >= 7.0 ? 'score-high' : (app.suggestedScore.doubleValue() >= 4.0 ? 'score-medium' : 'score-low')}">
+                        <span th:text="${app.suggestedScore}">0</span>/10
+                    </div>
+                    <div th:if="${app.suggestedScoreExplanation != null}" class="score-reasons"
+                         th:text="${app.suggestedScoreExplanation}">
+                        - suggested score reason
+                    </div>
+                    <div th:if="${app.suggestedScoreExplanation == null}" class="ai-explanation">
+                        No scoring explanation available.
+                    </div>
+                </div>
+                <div class="score-note">
+                    This score is only a reviewer aid. It does not automatically block, approve, or deny the application.
+                </div>
+            </div>
+
             <!-- AI recommendation (when scored) -->
             <div th:if="${app.llmScore != null}" class="ai-recommendation">
                 <div class="ai-header">

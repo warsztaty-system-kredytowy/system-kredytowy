@@ -74,13 +74,23 @@ public class LlmEvaluationService {
 
     private String buildPrompt(LoanApplication application) {
         StringBuilder sb = new StringBuilder();
+        boolean hasRuleBasedScore = application.getSuggestedScore() != null;
         sb.append(
                 "You are a credit risk analyst at a bank. Your task is to evaluate the following loan application.\n");
+        if (hasRuleBasedScore) {
+            sb.append("The bank also calculated a rule-based advisory score. Use it as one input, but do not copy it blindly.\n");
+            sb.append("This advisory score must never be treated as an automatic approval or rejection decision.\n");
+        }
         sb.append("Analyze the data and return a response in JSON format containing exactly two fields:\n");
         sb.append(
                 "1. \"score\" (a numeric type from 0.0 to 10.0, where 10.0 is an excellent application and 0.0 is a critically bad application).\n");
-        sb.append(
-                "2. \"explanation\" (a string type containing a substantive justification in English for why such a score was given. List the applicant's strengths and weaknesses. THE EXPLANATION MUST BE SHORT AND CONCISE, MAXIMUM 200 WORDS).\n\n");
+        if (hasRuleBasedScore) {
+            sb.append(
+                    "2. \"explanation\" (a string type containing a substantive justification in English for why such a score was given. List the applicant's strengths and weaknesses. Include one sentence that starts with \"Rule-based score usage:\" and explains whether you agreed with, adjusted, or discounted the rule-based advisory score. THE EXPLANATION MUST BE SHORT AND CONCISE, MAXIMUM 200 WORDS).\n\n");
+        } else {
+            sb.append(
+                    "2. \"explanation\" (a string type containing a substantive justification in English for why such a score was given. List the applicant's strengths and weaknesses. THE EXPLANATION MUST BE SHORT AND CONCISE, MAXIMUM 200 WORDS).\n\n");
+        }
 
         sb.append("Application Data:\n");
         sb.append("- Requested Amount: ").append(application.getLoanAmount()).append(" PLN\n");
@@ -89,6 +99,13 @@ public class LlmEvaluationService {
         sb.append("- Monthly Income: ").append(application.getMonthlyIncome()).append(" PLN\n");
         sb.append("- Monthly Liabilities (fixed costs): ").append(application.getMonthlyLiabilities())
                 .append(" PLN\n");
+        if (hasRuleBasedScore) {
+            sb.append("- Rule-Based Advisory Score: ").append(application.getSuggestedScore()).append("/10\n");
+        }
+        if (application.getSuggestedScoreExplanation() != null) {
+            sb.append("- Rule-Based Advisory Explanation: ")
+                    .append(application.getSuggestedScoreExplanation()).append("\n");
+        }
 
         sb.append("- Credit History (current liabilities):\n");
         if (application.getCreditHistory() == null || application.getCreditHistory().isEmpty()) {
@@ -108,6 +125,10 @@ public class LlmEvaluationService {
         sb.append(
                 "2. If disposable income is lower than the estimated new installment, the application should be scored low (0-3).\n");
         sb.append("3. A good purpose and positive credit history can increase the score.\n");
+        if (hasRuleBasedScore) {
+            sb.append("4. The rule-based advisory score is an internal employee aid only. The final decision belongs to a human reviewer.\n");
+            sb.append("5. Explicitly mention in the explanation how the rule-based score influenced your final score.\n");
+        }
         sb.append("\nRETURN ONLY A VALID JSON OBJECT WITHOUT MARKDOWN TAGS.");
 
         return sb.toString();

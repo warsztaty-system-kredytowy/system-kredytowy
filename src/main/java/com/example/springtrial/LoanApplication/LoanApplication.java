@@ -43,6 +43,12 @@ public class LoanApplication {
     @Column(length = 4000)
     private String llmExplanation;
 
+    @Column(precision = 3, scale = 1)
+    private BigDecimal suggestedScore;
+
+    @Column(length = 4000)
+    private String suggestedScoreExplanation;
+
     private boolean isFinalDecision = false;
 
     private String owner;

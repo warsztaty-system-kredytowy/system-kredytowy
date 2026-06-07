@@ -200,6 +200,11 @@
                         <span><span th:text="${app.loanTermYears}">0</span> year(s)</span>
                     </div>
                     <div class="app-detail-item" style="font-weight: bold;"
+                         th:style="${app.suggestedScore != null and app.suggestedScore.doubleValue() >= 7.0 ? 'color:#0f5132;font-weight:bold;' : (app.suggestedScore != null and app.suggestedScore.doubleValue() >= 4.0 ? 'color:#856404;font-weight:bold;' : 'color:#842029;font-weight:bold;')}">
+                        <span class="material-icons">analytics</span>
+                        <span>Suggested Score: <span th:text="${app.suggestedScore != null ? app.suggestedScore : 'N/A'}">N/A</span>/10</span>
+                    </div>
+                    <div class="app-detail-item" style="font-weight: bold;"
                          th:style="${app.llmScore != null and app.llmScore.doubleValue() >= 7.0 ? 'color:#0f5132;font-weight:bold;' : (app.llmScore != null and app.llmScore.doubleValue() >= 4.0 ? 'color:#856404;font-weight:bold;' : 'color:#842029;font-weight:bold;')}">
                         <span class="material-icons">auto_awesome</span>
                         <span>AI Score: <span th:text="${app.llmScore != null ? app.llmScore : 'N/A'}">N/A</span>/10</span>
@@ -238,6 +243,8 @@
                     <div><strong>Term:</strong> <span th:text="${app.loanTermYears}">0</span> years</div>
                     <div><strong>Income:</strong> <span th:text="${app.monthlyIncome}">0</span> PLN</div>
                     <div><strong>Liabilities:</strong> <span th:text="${app.monthlyLiabilities}">0</span> PLN</div>
+                    <div><strong>Suggested Score:</strong> <span th:text="${app.suggestedScore != null ? app.suggestedScore : 'N/A'}">N/A</span>/10</div>
+                    <div><strong>AI Score:</strong> <span th:text="${app.llmScore != null ? app.llmScore : 'N/A'}">N/A</span>/10</div>
                     <div style="grid-column: 1 / -1; word-break: break-all; overflow-wrap: break-word;"><strong>Applicant:</strong> <span th:text="${app.owner}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Purpose:</strong> <span th:text="${app.loanPurpose}">N/A</span></div>
                     <div style="grid-column: 1 / -1;"><strong>Status:</strong>
